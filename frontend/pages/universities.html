@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>University Explorer & Directory - Degree Recommender</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <script src="../js/runtime-config.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../js/notifications.js"></script>
+    <script src="../js/auth.js"></script>
+    <style>
+      .filter-card {
+        background: rgba(15, 23, 42, 0.7);
+        border: 1px solid rgba(133, 158, 196, 0.2);
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 24px;
+        backdrop-filter: blur(10px);
+      }
+      .filter-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 14px;
+        align-items: flex-end;
+      }
+      .uni-cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 20px;
+      }
+      .uni-card {
+        background: linear-gradient(155deg, rgba(15, 23, 42, 0.85), rgba(30, 41, 59, 0.65));
+        border: 1px solid rgba(133, 158, 196, 0.2);
+        border-radius: 16px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        transition: all 0.2s ease;
+      }
+      .uni-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(99, 102, 241, 0.5);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+      }
+      .uni-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+      .uni-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #f8fafc;
+        margin: 0;
+      }
+      .uni-meta-badge {
+        font-size: 0.75rem;
+        padding: 4px 8px;
+        border-radius: 6px;
+        background: rgba(99, 102, 241, 0.15);
+        color: #a5b4fc;
+        border: 1px solid rgba(99, 102, 241, 0.3);
+        white-space: nowrap;
+      }
+    </style>
+  </head>
+  <body class="page-dashboard">
+    <div class="navbar">
+      <span class="logo">Degree Recommender</span>
+      <div class="nav-links">
+        <span id="navName" class="nav-name"></span>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="recommendations.html">Recommendations</a>
+        <a href="universities.html" style="color:#818cf8; font-weight:bold;">Universities</a>
+        <a href="#" class="btn-logout" onclick="window.AUTH_CLIENT.logout()">Logout</a>
+      </div>
+    </div>
+
+    <div class="dashboard content-stack">
+      <div class="page-header">
+        <h1>🏛️ Real-Time University Directory & Admissions</h1>
+        <p class="subtitle">Explore verified top universities across Pakistan with real fee structures, admission tests, and scholarship opportunities.</p>
+      </div>
+
+      <!-- Filter Bar -->
+      <div class="filter-card">
+        <div class="filter-grid">
+          <div class="form-group" style="margin:0;">
+            <label for="searchQuery">Search University or Degree</label>
+            <input type="text" id="searchQuery" placeholder="e.g. NUST, FAST, MBBS, BSCS..." oninput="applyFilters()" />
+          </div>
+
+          <div class="form-group" style="margin:0;">
+            <label for="cityFilter">City / Location</label>
+            <select id="cityFilter" onchange="applyFilters()">
+              <option value="">All Cities</option>
+              <option value="Lahore">Lahore</option>
+              <option value="Islamabad">Islamabad</option>
+              <option value="Karachi">Karachi</option>
+              <option value="Rawalpindi">Rawalpindi</option>
+              <option value="Faisalabad">Faisalabad</option>
+              <option value="Topi">Topi / KPK</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin:0;">
+            <label for="testFilter">Admission Test</label>
+            <select id="testFilter" onchange="applyFilters()">
+              <option value="">All Admission Tests</option>
+              <option value="NET">NET (NUST)</option>
+              <option value="NU">NU Entry Test (FAST)</option>
+              <option value="MDCAT">PMDC MDCAT</option>
+              <option value="ECAT">ECAT (Engineering)</option>
+              <option value="LAT">HEC LAT (Law)</option>
+              <option value="NAT">NTS NAT</option>
+              <option value="SAT">SAT / LCAT</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin:0; display:flex; align-items:center; height:100%; padding-bottom:8px;">
+            <label style="display:inline-flex; align-items:center; gap:8px; cursor:pointer; color:#cbd5e1; margin:0;">
+              <input type="checkbox" id="scholarshipFilter" onchange="applyFilters()" />
+              <span>Scholarships Available Only</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results Count -->
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <span id="resultsCount" style="color:#94a3b8; font-size:0.9rem;">Loading verified institutions...</span>
+      </div>
+
+      <!-- University Grid -->
+      <div id="universityGrid" class="uni-cards-grid">
+        <div class="loading-state" style="text-align:center; padding:40px; grid-column:1/-1;">
+          <p>Loading real-time university database...</p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const { apiFetch, requireAuth } = window.AUTH_CLIENT
+      let allUniversities = []
+
+      async function loadData() {
+        try {
+          const profile = await requireAuth()
+          if (!profile) return
+          document.getElementById('navName').textContent = profile.name || ''
+
+          const degrees = await apiFetch('/degrees')
+          
+          const uniMap = new Map()
+          degrees.forEach((d) => {
+            (d.universities || []).forEach((u) => {
+              const key = `${u.name}-${u.location}`
+              if (!uniMap.has(key)) {
+                uniMap.set(key, {
+                  name: u.name,
+                  location: u.location || 'Pakistan',
+                  ranking: u.ranking || 5,
+                  feePerYear: u.feePerYear || 'Standard Govt/Private',
+                  hasScholarship: Boolean(u.hasScholarship),
+                  admissionTest: u.admissionTest || 'University Entry Test',
+                  website: u.website || '#',
+                  offeredDegrees: [d.shortName || d.name],
+                })
+              } else {
+                const existing = uniMap.get(key)
+                if (!existing.offeredDegrees.includes(d.shortName || d.name)) {
+                  existing.offeredDegrees.push(d.shortName || d.name)
+                }
+              }
+            })
+          })
+
+          allUniversities = Array.from(uniMap.values())
+          renderUniversities(allUniversities)
+        } catch (err) {
+          document.getElementById('universityGrid').innerHTML = `<div class="alert alert-error">Failed to load universities: ${err.message}</div>`
+        }
+      }
+
+      function renderUniversities(list) {
+        const grid = document.getElementById('universityGrid')
+        const count = document.getElementById('resultsCount')
+
+        count.textContent = `Showing ${list.length} verified institution${list.length === 1 ? '' : 's'}`
+
+        if (!list.length) {
+          grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:#94a3b8;">No institutions match your selected filter criteria.</div>'
+          return
+        }
+
+        grid.innerHTML = list.map((u) => `
+          <div class="uni-card">
+            <div>
+              <div class="uni-header">
+                <h3 class="uni-title">${u.name}</h3>
+                <span class="uni-meta-badge">⭐ Rank #${u.ranking}</span>
+              </div>
+              <div style="font-size:0.85rem; color:#94a3b8; margin-bottom:12px; display:flex; align-items:center; gap:6px;">
+                📍 <span>${u.location}</span>
+              </div>
+              <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:8px; padding:12px; margin-bottom:14px; font-size:0.85rem;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                  <span style="color:#94a3b8;">Est. Tuition Fee:</span>
+                  <strong style="color:#34d399;">${u.feePerYear}</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                  <span style="color:#94a3b8;">Admission Test:</span>
+                  <span style="color:#818cf8; font-weight:600;">${u.admissionTest}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                  <span style="color:#94a3b8;">Financial Aid / Scholarship:</span>
+                  <span style="color:${u.hasScholarship ? '#34d399' : '#f87171'};">${u.hasScholarship ? '✅ Available' : '❌ Limited'}</span>
+                </div>
+              </div>
+              <div style="margin-bottom:16px;">
+                <span style="font-size:0.75rem; color:#64748b; text-transform:uppercase; font-weight:bold; letter-spacing:0.5px;">Programs Offered:</span>
+                <div style="display:flex; flex-wrap:wrap; gap:4px; margin-top:4px;">
+                  ${u.offeredDegrees.map((deg) => `<span style="font-size:0.75rem; background:rgba(99,102,241,0.15); color:#c7d2fe; border-radius:4px; padding:2px 6px;">${deg}</span>`).join('')}
+                </div>
+              </div>
+            </div>
+            <div>
+              <a href="${u.website.startsWith('http') ? u.website : 'https://' + u.website}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="width:100%; text-align:center; padding:8px; font-size:0.85rem; text-decoration:none; display:inline-block;">
+                🌐 Official Admissions Portal ↗
+              </a>
+            </div>
+          </div>
+        `).join('')
+      }
+
+      function applyFilters() {
+        const query = document.getElementById('searchQuery').value.trim().toLowerCase()
+        const city = document.getElementById('cityFilter').value.toLowerCase()
+        const test = document.getElementById('testFilter').value.toLowerCase()
+        const scholarshipOnly = document.getElementById('scholarshipFilter').checked
+
+        const filtered = allUniversities.filter((u) => {
+          const matchQuery = !query || 
+            u.name.toLowerCase().includes(query) || 
+            u.location.toLowerCase().includes(query) ||
+            u.offeredDegrees.some((d) => d.toLowerCase().includes(query))
+
+          const matchCity = !city || u.location.toLowerCase().includes(city)
+          const matchTest = !test || u.admissionTest.toLowerCase().includes(test)
+          const matchScholarship = !scholarshipOnly || u.hasScholarship
+
+          return matchQuery && matchCity && matchTest && matchScholarship
+        })
+
+        renderUniversities(filtered)
+      }
+
+      window.onload = loadData
+    </script>
+  </body>
+</html>

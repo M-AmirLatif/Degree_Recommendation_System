@@ -109,6 +109,7 @@
       <div class="nav-links" id="navLinks">
         <span id="navName" class="nav-name"></span>
         <a href="recommendations.html">Degree Matches</a>
+        <a href="universities.html">Universities</a>
         <a href="#" class="btn-logout" onclick="logout()">Logout</a>
       </div>
     </div>
@@ -158,34 +159,51 @@
             <p id="profileEducation">-</p>
           </div>
           <div class="profile-item">
+            <label>Previous Qualification</label>
+            <p id="profileQualification">-</p>
+          </div>
+          <div class="profile-item">
             <label>Major Stream</label>
             <p id="profileStream">-</p>
           </div>
           <div class="profile-item">
-            <label>Work Preference</label>
-            <p id="profileWork">-</p>
-          </div>
-          <div class="profile-item career-goal-item">
             <label>Career Goal</label>
-            <p id="profileCareer">-</p>
+            <p id="profileGoal">-</p>
+          </div>
+          <div class="profile-item">
+            <label>Budget</label>
+            <p id="profileBudget">-</p>
+          </div>
+          <div class="profile-item">
+            <label>Study Location</label>
+            <p id="profileLocation">-</p>
+          </div>
+          <div class="profile-item">
+            <label>Scholarship Needed</label>
+            <p id="profileScholarship">-</p>
           </div>
         </div>
-        <div class="profile-interests">
-          <p class="row-meta section-label">Interests</p>
-          <div id="interestTags" class="tag-list"></div>
+      </section>
+
+      <section class="glass-panel enrolled-panel">
+        <div class="panel-header">
+          <h2>My Enrolled Degrees</h2>
+          <span class="badge" id="enrollmentLimitBadge">0/2 Enrolled</span>
+        </div>
+        <div id="enrolledList" class="enrolled-list">
+          <p class="empty-text">No degrees enrolled yet.</p>
         </div>
       </section>
 
-      <section class="glass-panel enrollments-panel">
-        <h2>My Enrollments</h2>
-        <div id="enrollmentsList">
-          <p class="empty-text">Loading enrollments...</p>
+      <div class="action-banner">
+        <div class="action-content">
+          <h3>Ready to discover your ideal degrees?</h3>
+          <p>
+            Explore personalized degree recommendations and top university pathways.
+          </p>
         </div>
-      </section>
-
-      <div class="center-cta">
-        <a href="recommendations.html" class="cta-btn"
-          >Explore Degree Recommendations</a
+        <a href="recommendations.html" class="btn btn-primary"
+          >View Degree Matches →</a
         >
       </div>
     </div>
@@ -193,130 +211,92 @@
     <script>
       const { apiFetch, requireAuth, logout } = window.AUTH_CLIENT
 
-      window.onload = async () => {
-        document.getElementById('welcomeMsg').textContent =
-          'Loading your dashboard...'
-        const profile = await requireAuth()
-        if (!profile) return
-
-        await loadProfile(profile)
-        await loadDegreeEnrollments()
-        await loadDegreeCount()
-        await loadRecommendationCount()
+      function toggleNav() {
+        document.getElementById('navLinks').classList.toggle('open')
+        document.querySelector('.nav-toggle').classList.toggle('open')
       }
 
-      async function loadProfile(data) {
-        document.getElementById('welcomeMsg').textContent =
-          `Welcome back, ${data.name}`
-        document.getElementById('navName').textContent = data.name
-        document.getElementById('profileName').textContent = data.name
-        document.getElementById('profileEmail').textContent = data.email
-        document.getElementById('profileEducation').textContent =
-          data.educationLevel || 'Not specified'
-        document.getElementById('profileStream').textContent =
-          data.majorStream || 'Not specified'
-        document.getElementById('profileWork').textContent =
-          data.workPreference || 'Not specified'
-        document.getElementById('profileCareer').textContent =
-          data.careerGoal || 'Not specified'
-
-        const tagsDiv = document.getElementById('interestTags')
-        tagsDiv.innerHTML = ''
-        const interests = data.interestAreas || data.interests || []
-        interests.forEach((interest) => {
-          tagsDiv.innerHTML += `<span class="tag">${interest}</span>`
-        })
-      }
-
-      async function loadDegreeCount() {
-        const data = await apiFetch('/degrees')
-        document.getElementById('totalCourses').textContent = Array.isArray(data)
-          ? data.length
-          : 0
-      }
-
-      async function loadDegreeEnrollments() {
-        const data = await apiFetch('/degree-enrollments')
-        const enrollments = Array.isArray(data.enrollments) ? data.enrollments : []
-
-        document.getElementById('enrolledCourses').textContent =
-          data.count ?? enrollments.length
-
-        const list = document.getElementById('enrollmentsList')
-
-        if (enrollments.length === 0) {
-          list.innerHTML =
-            '<p class="empty-text">No degree enrollments yet. Get recommendations to enroll.</p>'
-          return
-        }
-
-        list.innerHTML = ''
-        enrollments.forEach((enrollment) => {
-          const degree = enrollment.degree || {}
-          const enrollmentId = enrollment._id
-          const degreeName = degree.name || 'Degree'
-          const degreeShort = degree.shortName || 'Program'
-          const degreeField = degree.field || 'General'
-          const statusClass = 'status-enrolled'
-
-          list.innerHTML += `
-            <div class="enrollment-row">
-              <div class="enrollment-main">
-                <p class="enrollment-title">${degreeName}</p>
-                <div class="enrollment-meta">
-                  <span class="meta-pill">${degreeShort}</span>
-                  <span class="meta-pill">${degreeField}</span>
-                </div>
-              </div>
-              <div class="enrollment-actions">
-                <span class="status-badge ${statusClass}">enrolled</span>
-                <button class="btn-unenroll" onclick="unenrollDegree('${enrollmentId}')">Unenroll</button>
-              </div>
-            </div>
-          `
-        })
+      function escapeHtml(value) {
+        if (value === null || value === undefined) return ''
+        return String(value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;')
       }
 
       async function unenrollDegree(degreeId) {
-        const data = await apiFetch(`/degree-enrollments/${degreeId}`, {
-          method: 'DELETE',
-        })
-        await loadDegreeEnrollments()
-        await loadRecommendationCount()
-        showAppAlert(
-          data.message || 'Degree unenrolled successfully.',
-          'success',
-        )
-      }
-
-      async function loadRecommendationCount() {
         try {
-          const data = await apiFetch('/recommendations')
-          document.getElementById('recommendations').textContent = Array.isArray(
-            data.recommendations,
-          )
-            ? data.recommendations.length
-            : 0
+          const data = await apiFetch(`/degree-enrollments/${degreeId}`, {
+            method: 'DELETE',
+          })
+          showAppAlert(data.message || 'Degree unenrolled successfully.', 'success')
+          await loadEnrollments()
         } catch (error) {
-          document.getElementById('recommendations').textContent = '0'
+          showAppAlert(error.data?.message || 'Failed to unenroll degree.', 'error')
         }
       }
 
-      function toggleNav() {
-        const nav = document.getElementById('navLinks')
-        const btn = document.querySelector('.nav-toggle')
-        nav.classList.toggle('open')
-        btn.classList.toggle('open')
-      }
-      // Close nav when clicking outside
-      document.addEventListener('click', function (e) {
-        const nav = document.getElementById('navLinks')
-        const btn = document.querySelector('.nav-toggle')
-        if (nav && btn && !nav.contains(e.target) && !btn.contains(e.target)) {
-          nav.classList.remove('open')
-          btn.classList.remove('open')
+      async function loadEnrollments() {
+        try {
+          const data = await apiFetch('/degree-enrollments')
+          const enrollments = data.enrollments || []
+          const maxAllowed = data.maxAllowed || 2
+          document.getElementById('enrolledCourses').textContent = enrollments.length
+          document.getElementById('enrollmentLimitBadge').textContent = `${enrollments.length}/${maxAllowed} Enrolled`
+
+          const list = document.getElementById('enrolledList')
+          if (enrollments.length === 0) {
+            list.innerHTML = '<p class="empty-text">No degrees enrolled yet. Go to recommendations to choose your target degree!</p>'
+            return
+          }
+
+          list.innerHTML = enrollments.map((entry) => {
+            const degree = entry.degree || {}
+            return `
+              <div class="enrolled-card">
+                <div>
+                  <h4 style="margin:0 0 4px 0; color:#f8fafc;">${escapeHtml(degree.name || 'Degree')}</h4>
+                  <p style="margin:0; font-size:12px; color:#94a3b8;">${escapeHtml(degree.field || 'General')} • ${escapeHtml(degree.duration || '4 years')}</p>
+                </div>
+                <div class="enrollment-actions">
+                  <button class="btn-unenroll" onclick="unenrollDegree('${degree._id}')">Unenroll</button>
+                </div>
+              </div>
+            `
+          }).join('')
+        } catch (err) {
+          console.error(err)
         }
-      })
+      }
+
+      window.onload = async () => {
+        try {
+          const profile = await requireAuth()
+          if (!profile) return
+
+          document.getElementById('welcomeMsg').textContent = `Welcome, ${profile.name}!`
+          document.getElementById('navName').textContent = profile.name
+          document.getElementById('profileName').textContent = profile.name
+          document.getElementById('profileEmail').textContent = profile.email
+          document.getElementById('profileEducation').textContent = (profile.educationLevel || 'Intermediate').toUpperCase()
+          document.getElementById('profileQualification').textContent = profile.previousQualification || 'N/A'
+          document.getElementById('profileStream').textContent = (profile.majorStream || 'Science').toUpperCase()
+          document.getElementById('profileGoal').textContent = profile.careerGoal || 'Not specified'
+          document.getElementById('profileBudget').textContent = (profile.budget || 'Medium').toUpperCase()
+          document.getElementById('profileLocation').textContent = (profile.studyLocation || 'Any').toUpperCase()
+          document.getElementById('profileScholarship').textContent = profile.needsScholarship ? 'Yes' : 'No'
+          document.getElementById('cgpa').textContent = profile.gpa || profile.cgpa || '0.0'
+
+          const degrees = await apiFetch('/degrees')
+          document.getElementById('totalCourses').textContent = degrees.length || 0
+
+          await loadEnrollments()
+        } catch (e) {
+          console.error(e)
+        }
+      }
     </script>
   </body>
 </html>
