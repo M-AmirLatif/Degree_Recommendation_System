@@ -96,11 +96,12 @@ window.AI_ADVISOR = (function () {
       </div>
 
       <div style="margin-top:24px;">
-        <h3 style="color:#f8fafc; margin-bottom:16px;">🗺️ Your 4-Year Milestone Roadmap</h3>
+        <h3 style="color:#f8fafc; margin-bottom:16px;">🗺️ Step-by-Step Academic & Career Roadmap</h3>
         ${renderYear('year1', 1)}
         ${renderYear('year2', 2)}
         ${renderYear('year3', 3)}
         ${renderYear('year4', 4)}
+        ${renderYear('year5', 5)}
       </div>
     `
   }

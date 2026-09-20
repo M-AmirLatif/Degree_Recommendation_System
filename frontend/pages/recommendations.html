@@ -717,8 +717,10 @@
         const data = await apiFetch('/recommendations')
         lastRecommendationData = data
 
+        const levelBadge = data.educationLevel ? data.educationLevel.toUpperCase() : 'STUDENT'
+        const qualText = data.previousQualification ? ` • ${data.previousQualification}` : ''
         document.getElementById('subtitleMsg').textContent =
-          `Personalized degree recommendations for ${data.student}`
+          `Personalized academic & career recommendations for ${data.student} (${levelBadge}${qualText})`
         document.getElementById('careerGoal').textContent =
           data.careerGoal || 'Not specified'
         document.getElementById('totalAnalyzed').textContent =
