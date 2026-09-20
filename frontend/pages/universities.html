@@ -53,9 +53,14 @@
       }
       .filter-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 14px;
+        grid-template-columns: 2fr 1.2fr 1.2fr auto auto;
+        gap: 12px;
         align-items: flex-end;
+      }
+      @media (max-width: 1024px) {
+        .filter-grid {
+          grid-template-columns: 1fr 1fr;
+        }
       }
       .uni-cards-grid {
         display: grid;
@@ -161,7 +166,12 @@
         <div class="filter-grid">
           <div class="form-group" style="margin:0;">
             <label for="searchQuery">Search University or Degree</label>
-            <input type="text" id="searchQuery" placeholder="e.g. NUST, FAST, MBBS, BSCS..." oninput="applyFilters()" />
+            <input
+              type="text"
+              id="searchQuery"
+              placeholder="e.g. NUST, FAST, MBBS, BSCS..."
+              onkeydown="if (event.key === 'Enter') applyFilters()"
+            />
           </div>
 
           <div class="form-group" style="margin:0;">
@@ -191,11 +201,20 @@
             </select>
           </div>
 
-          <div class="form-group" style="margin:0; display:flex; align-items:center; height:100%; padding-bottom:8px;">
-            <label style="display:inline-flex; align-items:center; gap:8px; cursor:pointer; color:#cbd5e1; margin:0;">
+          <div class="form-group" style="margin:0; display:flex; align-items:center; height:46px;">
+            <label style="display:inline-flex; align-items:center; gap:8px; cursor:pointer; color:#cbd5e1; margin:0; font-size:0.85rem; white-space:nowrap;">
               <input type="checkbox" id="scholarshipFilter" onchange="applyFilters()" />
-              <span>Scholarships Available Only</span>
+              <span>Scholarships Only</span>
             </label>
+          </div>
+
+          <div class="form-group" style="margin:0; display:flex; gap:8px;">
+            <button id="searchBtn" class="btn btn-primary" onclick="applyFilters()" style="padding:0 22px; height:46px; font-weight:700; font-size:0.92rem; display:inline-flex; align-items:center; justify-content:center; gap:6px; cursor:pointer; box-shadow:0 4px 14px rgba(59,130,246,0.35);">
+              🔍 Search
+            </button>
+            <button class="btn btn-secondary" onclick="resetFilters()" style="padding:0 14px; height:46px; font-size:0.95rem; cursor:pointer;" title="Reset Filters">
+              ↺
+            </button>
           </div>
         </div>
       </div>
