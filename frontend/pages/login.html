@@ -69,7 +69,7 @@
         try {
           const data = await apiFetch('/auth/login', {
             method: 'POST',
-            body: { email, password },
+            body: { email: email.toLowerCase().trim(), password },
           })
 
           if (data.role === 'admin') {

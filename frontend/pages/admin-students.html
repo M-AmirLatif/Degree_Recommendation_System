@@ -216,12 +216,12 @@
       }
 
       function filterStudents() {
-        const query = document.getElementById('searchInput').value.toLowerCase()
+        const query = (document.getElementById('searchInput').value || '').trim().toLowerCase()
         const filtered = allStudents.filter(
           (s) =>
-            s.name.toLowerCase().includes(query) ||
-            s.email.toLowerCase().includes(query) ||
-            s.studentId.toLowerCase().includes(query) ||
+            (s.name || '').toLowerCase().includes(query) ||
+            (s.email || '').toLowerCase().includes(query) ||
+            (s.studentId || '').toLowerCase().includes(query) ||
             (s.majorStream || '').toLowerCase().includes(query) ||
             (s.careerGoal || '').toLowerCase().includes(query),
         )

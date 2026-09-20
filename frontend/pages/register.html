@@ -858,7 +858,7 @@
         const payload = {
           name: document.getElementById('name').value.trim(),
           studentId: document.getElementById('studentId').value.trim(),
-          email: document.getElementById('email').value.trim(),
+          email: document.getElementById('email').value.trim().toLowerCase(),
           password: document.getElementById('password').value,
           educationLevel: level,
           previousQualification: document.getElementById('previousQualification').value,
