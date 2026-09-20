@@ -43,8 +43,8 @@
   --type-field-value-weight: 500;
   --type-field-value-color: #ecf5ff;
   --type-field-value-shadow: 0 0 14px rgba(96, 165, 250, 0.14);
-  --type-field-placeholder-color: #98aed2;
-  --type-field-placeholder-weight: 500;
+  --type-field-placeholder-color: rgba(148, 174, 210, 0.45);
+  --type-field-placeholder-weight: 400;
 }
 
 /* ═══════════════════════════════════════
@@ -347,11 +347,28 @@ body::before {
 }
 
 .form-group input::placeholder,
-.form-group select::placeholder {
+.form-group select::placeholder,
+.form-group textarea::placeholder {
   color: var(--type-field-placeholder-color);
   font-weight: var(--type-field-placeholder-weight);
   letter-spacing: 0.1px;
   text-shadow: none;
+  opacity: 0.65;
+}
+
+.form-group select:invalid,
+.form-group select:has(option[value=""]:checked) {
+  color: var(--type-field-placeholder-color);
+  font-weight: 400;
+}
+
+.form-group select option {
+  background: #0d1b3e;
+  color: var(--type-field-value-color);
+}
+
+.form-group select option[value=""] {
+  color: var(--type-field-placeholder-color);
 }
 
 .form-group input:-webkit-autofill,
@@ -2721,11 +2738,27 @@ select:focus-visible {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
-.page-auth .form-group input:not([type='checkbox'])::placeholder {
+.page-auth .form-group input:not([type='checkbox'])::placeholder,
+.page-auth .form-group textarea::placeholder {
   color: var(--type-field-placeholder-color);
   font-weight: var(--type-field-placeholder-weight);
   letter-spacing: 0.1px;
-  opacity: 1;
+  opacity: 0.65;
+}
+
+.page-auth .form-group select:invalid,
+.page-auth .form-group select:has(option[value=""]:checked) {
+  color: var(--type-field-placeholder-color);
+  font-weight: 400;
+}
+
+.page-auth .form-group select option {
+  background: #0c1832;
+  color: var(--type-field-value-color);
+}
+
+.page-auth .form-group select option[value=""] {
+  color: var(--type-field-placeholder-color);
 }
 
 .page-auth .form-group input:not([type='checkbox']):focus,
