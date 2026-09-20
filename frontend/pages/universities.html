@@ -243,6 +243,24 @@
 
       let allUniversities = []
 
+      const UNI_ALIASES = [
+        { acronym: 'kemu', name: 'King Edward Medical University', keywords: ['kemu', 'king edward', 'kemcolian'] },
+        { acronym: 'nust', name: 'NUST', keywords: ['nust', 'seecs', 'eme', 'smme', 'sada', 's3h', 'asab'] },
+        { acronym: 'fast', name: 'FAST-NUCES', keywords: ['fast', 'nuces', 'fast-nu'] },
+        { acronym: 'lums', name: 'LUMS', keywords: ['lums', 'sbasse', 'sdsb', 'sahsol'] },
+        { acronym: 'giki', name: 'GIKI', keywords: ['giki', 'ghulam ishaq khan'] },
+        { acronym: 'uet', name: 'UET Lahore', keywords: ['uet', 'university of engineering'] },
+        { acronym: 'aku', name: 'Aga Khan University', keywords: ['aku', 'aga khan'] },
+        { acronym: 'aimc', name: 'Allama Iqbal Medical College', keywords: ['aimc', 'allama iqbal'] },
+        { acronym: 'rmu', name: 'Rawalpindi Medical University', keywords: ['rmu', 'rawalpindi medical'] },
+        { acronym: 'qau', name: 'Quaid-i-Azam University', keywords: ['qau', 'quaid-e-azam', 'quaid-i-azam'] },
+        { acronym: 'iba', name: 'IBA Karachi', keywords: ['iba', 'institute of business administration'] },
+        { acronym: 'pucit', name: 'Punjab University (PUCIT)', keywords: ['pucit', 'punjab university', 'pu'] },
+        { acronym: 'comsats', name: 'COMSATS', keywords: ['comsats', 'cui'] },
+        { acronym: 'itu', name: 'Information Technology University (ITU)', keywords: ['itu'] },
+        { acronym: 'pieas', name: 'PIEAS', keywords: ['pieas'] }
+      ]
+
       async function loadData() {
         const studentName = localStorage.getItem('studentName')
         if (studentName) {
@@ -252,13 +270,23 @@
 
         try {
           const response = await window.AUTH_CLIENT.apiFetch('/degrees')
-          const degrees = response.degrees || []
+          const degrees = Array.isArray(response) ? response : (response.degrees || [])
 
           const uniMap = new Map()
           degrees.forEach((deg) => {
             (deg.universities || []).forEach((u) => {
               if (!u.name) return
-              const key = u.name.trim().toLowerCase()
+              
+              // Normalize uni key to group similar names
+              let key = u.name.trim().toLowerCase()
+              const matchedAlias = UNI_ALIASES.find(a => 
+                key.includes(a.acronym) || 
+                a.keywords.some(kw => key.includes(kw))
+              )
+              if (matchedAlias) {
+                key = matchedAlias.acronym
+              }
+
               if (!uniMap.has(key)) {
                 uniMap.set(key, {
                   name: u.name,
@@ -269,6 +297,7 @@
                   admissionTest: u.admissionTest || 'None',
                   website: u.website || 'https://hec.gov.pk',
                   offeredDegrees: [deg.shortName || deg.name],
+                  keywords: matchedAlias ? matchedAlias.keywords : []
                 })
               } else {
                 const existing = uniMap.get(key)
@@ -276,6 +305,10 @@
                   existing.offeredDegrees.push(deg.shortName || deg.name)
                 }
                 if (u.hasScholarship) existing.hasScholarship = true
+                if (u.ranking && u.ranking < existing.ranking) existing.ranking = u.ranking
+                if (u.admissionTest && (!existing.admissionTest || existing.admissionTest === 'None' || existing.admissionTest === 'Entry Test')) {
+                  existing.admissionTest = u.admissionTest
+                }
               }
             })
           })
@@ -318,7 +351,7 @@
           grid.innerHTML = `
             <div class="empty-text" style="grid-column:1/-1; text-align:center; padding:50px 20px; background:rgba(255,255,255,0.02); border:1px dashed rgba(255,255,255,0.1); border-radius:12px;">
               <p style="font-size:1.1rem; color:#f87171; margin-bottom:8px;">⚠️ No institutions match the combined filters.</p>
-              <p style="color:#94a3b8; font-size:0.9rem; margin-bottom:16px;">(e.g., NUST is located in <strong>Islamabad</strong>, not Lahore. Setting City to "All Cities" or "Islamabad" will show NUST.)</p>
+              <p style="color:#94a3b8; font-size:0.9rem; margin-bottom:16px;">(Tip: Try resetting filters to view all verified institutions across Pakistan.)</p>
               <button onclick="resetFilters()" class="btn btn-primary" style="padding:8px 20px; font-size:0.9rem;">
                 ↺ Reset All Filters
               </button>
@@ -377,10 +410,12 @@
           const matchQuery = !query || 
             u.name.toLowerCase().includes(query) || 
             u.location.toLowerCase().includes(query) ||
-            u.offeredDegrees.some((d) => d.toLowerCase().includes(query))
+            (u.admissionTest && u.admissionTest.toLowerCase().includes(query)) ||
+            u.offeredDegrees.some((d) => d.toLowerCase().includes(query)) ||
+            (u.keywords && u.keywords.some((kw) => kw.includes(query) || query.includes(kw)))
 
           const matchCity = !city || u.location.toLowerCase().includes(city)
-          const matchTest = !test || u.admissionTest.toLowerCase().includes(test)
+          const matchTest = !test || (u.admissionTest && u.admissionTest.toLowerCase().includes(test))
           const matchScholarship = !scholarshipOnly || u.hasScholarship
 
           return matchQuery && matchCity && matchTest && matchScholarship

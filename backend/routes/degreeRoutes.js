@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const Degree = require('../models/Degree')
-const protect = require('../middleware/authMiddleware')
+const { protect, optionalAuth } = require('../middleware/authMiddleware')
 const isAdmin = require('../middleware/adminMiddleware')
 const { validateDegree } = require('../middleware/validateMiddleware')
 const asyncHandler = require('../middleware/asyncHandler')
@@ -14,7 +14,7 @@ router.post('/compare', protect, compareDegrees)
 
 router.get(
   '/',
-  protect,
+  optionalAuth,
   asyncHandler(async (req, res) => {
     const showAll = req.query.all === '1' && req.student?.role === 'admin'
     const filter = showAll ? {} : { isActive: true }
@@ -25,7 +25,7 @@ router.get(
 
 router.get(
   '/:id',
-  protect,
+  optionalAuth,
   asyncHandler(async (req, res) => {
     const degree = await Degree.findById(req.params.id)
     if (!degree) return res.status(404).json({ message: 'Degree not found' })
