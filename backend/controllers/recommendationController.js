@@ -121,23 +121,30 @@ const getRecommendations = asyncHandler(async (req, res) => {
 
   const currentPreference = await Preference.findOne({
     student: student._id,
-  }).populate('likedDegrees dislikedDegrees')
+  }).populate('likedDegrees dislikedDegrees').lean()
 
-  const communityPreferences = await Preference.find({
-    student: { $ne: student._id },
-  })
-    .select('student likedDegrees dislikedDegrees')
-    .populate(
-      'student',
-      'majorStream subjectsStudied strongSubjects interestAreas preferredActivities analyticalSkills creativityLevel workPreference workEnvironment careerGoal budget needsScholarship studyLocation',
-    )
-    .limit(200)
-    .lean()
+  let communityPreferences = getCache('community_prefs')
+  if (!communityPreferences) {
+    communityPreferences = await Preference.find({})
+      .select('student likedDegrees dislikedDegrees')
+      .populate(
+        'student',
+        'majorStream subjectsStudied strongSubjects interestAreas preferredActivities analyticalSkills creativityLevel workPreference workEnvironment careerGoal budget needsScholarship studyLocation',
+      )
+      .limit(100)
+      .lean()
+    setCache('community_prefs', communityPreferences, 300)
+  }
+
+  // Filter out current student from community preferences
+  const otherCommunityPreferences = communityPreferences.filter(
+    (p) => String(p.student?._id || p.student) !== String(student._id),
+  )
 
   // Run recommendation engine
   const recommendations = recommendDegrees(student, degrees, {
     currentPreference,
-    communityPreferences,
+    communityPreferences: otherCommunityPreferences,
     student,
   })
 

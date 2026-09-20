@@ -713,8 +713,8 @@
         )
       }
 
-      async function render() {
-        const data = await apiFetch('/recommendations')
+      async function render(existingData = null) {
+        const data = existingData || (await apiFetch('/recommendations'))
         lastRecommendationData = data
 
         const levelBadge = data.educationLevel ? data.educationLevel.toUpperCase() : 'STUDENT'
@@ -859,13 +859,24 @@
 
       window.onload = async () => {
         try {
-          const profile = await requireAuth()
+          // Parallelize all independent startup requests
+          const profilePromise = requireAuth()
+          const feedbackPromise = loadFeedbackState().catch(() => {})
+          const enrollmentPromise = loadEnrollmentState().catch(() => {})
+          const recommendationsPromise = apiFetch('/recommendations')
+
+          const profile = await profilePromise
           if (!profile) return
 
           document.getElementById('navName').textContent = profile.name || ''
-          await loadFeedbackState()
-          await loadEnrollmentState()
-          await render()
+
+          const [, , recData] = await Promise.all([
+            feedbackPromise,
+            enrollmentPromise,
+            recommendationsPromise,
+          ])
+
+          await render(recData)
         } catch (e) {
           document.getElementById('recommendationsList').innerHTML =
             '<p class="error-text">Error loading recommendations. Please try again.</p>'

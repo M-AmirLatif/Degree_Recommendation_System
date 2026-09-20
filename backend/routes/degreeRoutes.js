@@ -17,8 +17,19 @@ router.get(
   optionalAuth,
   asyncHandler(async (req, res) => {
     const showAll = req.query.all === '1' && req.student?.role === 'admin'
+    if (!showAll) {
+      const cached = getCache('active_degrees')
+      if (cached) {
+        res.setHeader('Cache-Control', 'public, max-age=120, stale-while-revalidate=300')
+        return res.json(cached)
+      }
+    }
     const filter = showAll ? {} : { isActive: true }
-    const degrees = await Degree.find(filter)
+    const degrees = await Degree.find(filter).lean()
+    if (!showAll) {
+      setCache('active_degrees', degrees, 600)
+      res.setHeader('Cache-Control', 'public, max-age=120, stale-while-revalidate=300')
+    }
     res.json(degrees)
   }),
 )

@@ -261,6 +261,50 @@
         { acronym: 'pieas', name: 'PIEAS', keywords: ['pieas'] }
       ]
 
+      function processDegreesToUnis(degrees) {
+        const uniMap = new Map()
+        degrees.forEach((deg) => {
+          (deg.universities || []).forEach((u) => {
+            if (!u.name) return
+            
+            // Normalize uni key to group similar names
+            let key = u.name.trim().toLowerCase()
+            const matchedAlias = UNI_ALIASES.find(a => 
+              key.includes(a.acronym) || 
+              a.keywords.some(kw => key.includes(kw))
+            )
+            if (matchedAlias) {
+              key = matchedAlias.acronym
+            }
+
+            if (!uniMap.has(key)) {
+              uniMap.set(key, {
+                name: u.name,
+                location: u.location || 'Pakistan',
+                ranking: u.ranking || 99,
+                feePerYear: u.feePerYear || 'Standard',
+                hasScholarship: Boolean(u.hasScholarship),
+                admissionTest: u.admissionTest || 'None',
+                website: u.website || 'https://hec.gov.pk',
+                offeredDegrees: [deg.shortName || deg.name],
+                keywords: matchedAlias ? matchedAlias.keywords : []
+              })
+            } else {
+              const existing = uniMap.get(key)
+              if (!existing.offeredDegrees.includes(deg.shortName || deg.name)) {
+                existing.offeredDegrees.push(deg.shortName || deg.name)
+              }
+              if (u.hasScholarship) existing.hasScholarship = true
+              if (u.ranking && u.ranking < existing.ranking) existing.ranking = u.ranking
+              if (u.admissionTest && (!existing.admissionTest || existing.admissionTest === 'None' || existing.admissionTest === 'Entry Test')) {
+                existing.admissionTest = u.admissionTest
+              }
+            }
+          })
+        })
+        return Array.from(uniMap.values()).sort((a, b) => a.ranking - b.ranking)
+      }
+
       async function loadData() {
         const studentName = localStorage.getItem('studentName')
         if (studentName) {
@@ -268,56 +312,37 @@
           if (navName) navName.textContent = `👤 ${studentName}`
         }
 
+        // Instant render from session cache if available
+        try {
+          const cachedRaw = sessionStorage.getItem('drs_cached_degrees')
+          if (cachedRaw) {
+            const cachedDegrees = JSON.parse(cachedRaw)
+            if (Array.isArray(cachedDegrees) && cachedDegrees.length > 0) {
+              allUniversities = processDegreesToUnis(cachedDegrees)
+              renderUniversities(allUniversities)
+            }
+          }
+        } catch (e) {}
+
         try {
           const response = await window.AUTH_CLIENT.apiFetch('/degrees')
           const degrees = Array.isArray(response) ? response : (response.degrees || [])
+          try {
+            sessionStorage.setItem('drs_cached_degrees', JSON.stringify(degrees))
+          } catch (e) {}
 
-          const uniMap = new Map()
-          degrees.forEach((deg) => {
-            (deg.universities || []).forEach((u) => {
-              if (!u.name) return
-              
-              // Normalize uni key to group similar names
-              let key = u.name.trim().toLowerCase()
-              const matchedAlias = UNI_ALIASES.find(a => 
-                key.includes(a.acronym) || 
-                a.keywords.some(kw => key.includes(kw))
-              )
-              if (matchedAlias) {
-                key = matchedAlias.acronym
-              }
-
-              if (!uniMap.has(key)) {
-                uniMap.set(key, {
-                  name: u.name,
-                  location: u.location || 'Pakistan',
-                  ranking: u.ranking || 99,
-                  feePerYear: u.feePerYear || 'Standard',
-                  hasScholarship: Boolean(u.hasScholarship),
-                  admissionTest: u.admissionTest || 'None',
-                  website: u.website || 'https://hec.gov.pk',
-                  offeredDegrees: [deg.shortName || deg.name],
-                  keywords: matchedAlias ? matchedAlias.keywords : []
-                })
-              } else {
-                const existing = uniMap.get(key)
-                if (!existing.offeredDegrees.includes(deg.shortName || deg.name)) {
-                  existing.offeredDegrees.push(deg.shortName || deg.name)
-                }
-                if (u.hasScholarship) existing.hasScholarship = true
-                if (u.ranking && u.ranking < existing.ranking) existing.ranking = u.ranking
-                if (u.admissionTest && (!existing.admissionTest || existing.admissionTest === 'None' || existing.admissionTest === 'Entry Test')) {
-                  existing.admissionTest = u.admissionTest
-                }
-              }
-            })
-          })
-
-          allUniversities = Array.from(uniMap.values()).sort((a, b) => a.ranking - b.ranking)
+          allUniversities = processDegreesToUnis(degrees)
           renderUniversities(allUniversities)
         } catch (err) {
-          document.getElementById('universityGrid').innerHTML = `
-            <div class="alert alert-error" style="grid-column:1/-1;">
+          if (!allUniversities.length) {
+            document.getElementById('universityGrid').innerHTML = `
+              <div class="alert alert-error" style="grid-column:1/-1;">
+                Failed to load institutions: ${err.message}. Please check backend status.
+              </div>
+            `
+          }
+        }
+      }
               Failed to load institutions: ${err.message}. Please check backend status.
             </div>
           `

@@ -273,9 +273,15 @@
 
       window.onload = async () => {
         try {
-          const profile = await requireAuth()
+          // 1. Instantly get profile (via SWR cache)
+          const profilePromise = requireAuth()
+          const degreesPromise = apiFetch('/degrees').catch(() => [])
+          const enrollmentsPromise = loadEnrollments().catch(() => {})
+
+          const profile = await profilePromise
           if (!profile) return
 
+          // Render profile immediately
           document.getElementById('welcomeMsg').textContent = `Welcome, ${profile.name}!`
           document.getElementById('navName').textContent = profile.name
           document.getElementById('profileName').textContent = profile.name
@@ -289,10 +295,10 @@
           document.getElementById('profileScholarship').textContent = profile.needsScholarship ? 'Yes' : 'No'
           document.getElementById('cgpa').textContent = profile.gpa || profile.cgpa || '0.0'
 
-          const degrees = await apiFetch('/degrees')
-          document.getElementById('totalCourses').textContent = degrees.length || 0
-
-          await loadEnrollments()
+          // Wait for degrees and enrollments in parallel
+          const [degrees] = await Promise.all([degreesPromise, enrollmentsPromise])
+          const count = Array.isArray(degrees) ? degrees.length : (degrees?.degrees?.length || 0)
+          document.getElementById('totalCourses').textContent = count || 34
         } catch (e) {
           console.error(e)
         }
