@@ -39,6 +39,62 @@ const makeCourse = (
 })
 
 const COURSE_CATALOG = {
+  // ── 1. INTERMEDIATE & DIPLOMAS ──────────────────────────
+  'FSC-ENG': [
+    makeCourse('HSSC-MATH1', 'Higher Secondary Mathematics (Calculus & Trigonometry)', 'Mathematics', 1, 'intermediate', ['Mathematics', 'Calculus'], ['Differentiation', 'Integration', 'Analytical Geometry']),
+    makeCourse('HSSC-PHY1', 'Physics for Pre-Engineering (Mechanics & Waves)', 'Physics', 1, 'intermediate', ['Physics', 'Mechanics'], ['Vector Analysis', 'Rotational Dynamics']),
+    makeCourse('HSSC-CHEM1', 'Chemistry (Inorganic & Physical)', 'Chemistry', 2, 'intermediate', ['Chemistry', 'Equations'], ['Stoichiometry', 'Chemical Kinetics']),
+  ],
+  'FSC-MED': [
+    makeCourse('HSSC-BIO1', 'Biology (Cell Biology, Genetics & Physiology)', 'Biology', 1, 'intermediate', ['Biology', 'Genetics'], ['Cell Structure', 'Organ Systems Identification']),
+    makeCourse('HSSC-CHEM2', 'Organic & Biochemistry Fundamentals', 'Chemistry', 1, 'intermediate', ['Chemistry', 'Biochemistry'], ['Hydrocarbons', 'Functional Groups']),
+    makeCourse('HSSC-PHY2', 'Physics for Medical Sciences', 'Physics', 2, 'intermediate', ['Physics', 'Optics', 'Nuclear Physics'], ['Electromagnetism', 'Medical Physics Basics']),
+  ],
+  ICS: [
+    makeCourse('HSSC-CS1', 'Computer Science & C Programming', 'Computer Science', 1, 'beginner', ['Computer', 'C++', 'Programming'], ['Flowcharts', 'Syntax & Loops', 'Functions']),
+    makeCourse('HSSC-MATH2', 'Intermediate Mathematics & Matrices', 'Mathematics', 1, 'intermediate', ['Mathematics', 'Matrices'], ['Linear Algebra Basics', 'Mathematical Induction']),
+    makeCourse('HSSC-STAT1', 'Applied Statistics & Probability', 'Statistics', 2, 'intermediate', ['Statistics', 'Data'], ['Frequency Distributions', 'Standard Deviation']),
+  ],
+  ICOM: [
+    makeCourse('HSSC-ACC1', 'Principles of Accounting & Bookkeeping', 'Commerce', 1, 'beginner', ['Accounting', 'Bookkeeping'], ['Ledger Journaling', 'Trial Balance Preparation']),
+    makeCourse('HSSC-ECON1', 'Principles of Economics & Trade', 'Economics', 1, 'beginner', ['Economics', 'Commerce'], ['Supply & Demand', 'National Income']),
+    makeCourse('HSSC-BMATH1', 'Business Mathematics & Commercial Geography', 'Commerce', 2, 'intermediate', ['Mathematics', 'Finance'], ['Interest Calculations', 'Trade Logistics']),
+  ],
+  FA: [
+    makeCourse('HSSC-PSY1', 'Foundations of Psychology', 'Psychology', 1, 'beginner', ['Psychology', 'Sociology'], ['Behavioral Principles', 'Cognitive Development']),
+    makeCourse('HSSC-CIV1', 'Civics & Political Concepts', 'Social Sciences', 1, 'beginner', ['Pakistan Studies', 'Civics'], ['State Structure', 'Constitutional Basics']),
+    makeCourse('HSSC-ART1', 'Studio Drawing & Visual Expression', 'Arts', 2, 'intermediate', ['Art', 'Design'], ['Perspective Drawing', 'Composition']),
+  ],
+  DAE: [
+    makeCourse('DAE-ENG1', 'Applied Technical Mathematics & Engineering Physics', 'Technical Engineering', 1, 'intermediate', ['Mathematics', 'Physics'], ['Engineering Formulae', 'Applied Mechanics']),
+    makeCourse('DAE-TECH1', 'Workshop Technology & Industrial Practice', 'Technical Engineering', 2, 'intermediate', ['Building Things', 'Fieldwork'], ['Machine Operations', 'Safety Standards']),
+    makeCourse('DAE-CAD1', 'AutoCAD Drafting & Electrical/Mechanical Schematics', 'Technical Engineering', 3, 'intermediate', ['Computer', 'CAD'], ['Schematic Blueprint Reading', '2D/3D Drafting']),
+  ],
+
+  // ── 2. LATERAL BS 5TH SEMESTER ──────────────────────────
+  'BSCS-LAT': [
+    makeCourse('LAT-CS301', 'Advanced Object-Oriented Software Design', 'Computer Science', 5, 'intermediate', ['OOP', 'Design Patterns'], ['Clean Architecture', 'Refactoring']),
+    makeCourse('LAT-CS302', 'Enterprise Database Systems & SQL', 'Computer Science', 5, 'intermediate', ['Databases', 'SQL'], ['Database Normalization', 'ACID Transactions']),
+    makeCourse('LAT-CS401', 'Distributed Systems & Cloud Computing', 'Computer Science', 6, 'advanced', ['Cloud', 'Systems'], ['Microservices', 'Distributed Storage']),
+  ],
+  'BBA-LAT': [
+    makeCourse('LAT-BBA301', 'Corporate Strategy & Leadership', 'Business Administration', 5, 'intermediate', ['Strategy', 'Management'], ['Strategic Audit', 'Competitive Advantage']),
+    makeCourse('LAT-BBA302', 'Corporate Finance & Valuation Modeling', 'Business Administration', 5, 'intermediate', ['Finance', 'Accounting'], ['Valuation Models', 'Financial Statement Analysis']),
+  ],
+
+  // ── 3. POSTGRADUATE & MASTER'S ──────────────────────────
+  MSCS: [
+    makeCourse('MSCS701', 'Advanced Deep Learning & Neural Architectures', 'Computer Science', 1, 'advanced', ['DL', 'PyTorch', 'Transformers'], ['Attention Models', 'Diffusion Models', 'LLM Architectures']),
+    makeCourse('MSCS702', 'High Performance Distributed Computing', 'Computer Science', 2, 'advanced', ['Distributed Systems', 'Cloud'], ['Cluster Scheduling', 'Parallel Computing']),
+    makeCourse('MSCS801', 'Postgraduate Thesis Research & Defense', 'Computer Science', 3, 'advanced', ['Research', 'Writing'], ['Scientific Publishing', 'Experimental Validation']),
+  ],
+  MBA: [
+    makeCourse('MBA701', 'Strategic Executive Leadership & Corporate Governance', 'Business Administration', 1, 'advanced', ['Leadership', 'Strategy'], ['Executive Negotiation', 'Governance Frameworks']),
+    makeCourse('MBA702', 'Global Supply Chain & Operations Management', 'Business Administration', 2, 'advanced', ['Operations', 'Supply Chain'], ['Procurement Logistics', 'Risk Mitigation']),
+    makeCourse('MBA801', 'Corporate Mergers, Acquisitions & Venture Capital', 'Business Administration', 3, 'advanced', ['Finance', 'Venture Capital'], ['LBO Modeling', 'Due Diligence']),
+  ],
+
+  // ── 4. BACHELOR'S DEGREES ───────────────────────────────
   BSCS: [
     makeCourse('CS101', 'Programming Fundamentals', 'Computer Science', 1, 'beginner', ['Programming', 'C++', 'Logic'], ['Programming Basics', 'Problem Solving']),
     makeCourse('CS102', 'Object Oriented Programming', 'Computer Science', 2, 'intermediate', ['OOP', 'Java', 'Design Patterns'], ['Polymorphism', 'Abstraction', 'Encapsulation']),
@@ -244,7 +300,7 @@ const seedCourses = async () => {
       }
     }
 
-    logger.info('Successfully seeded courses for all degrees', { upserted, skipped })
+    logger.info('Successfully seeded courses for all academic programs', { upserted, skipped })
     process.exit(0)
   } catch (error) {
     logger.error('Seed courses failed', {

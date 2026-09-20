@@ -96,6 +96,42 @@ const scoreAcademic = (student, degree) => {
     }
   }
 
+  // Level progression match (10 points bonus / penalty)
+  const studentLevel = String(student.educationLevel || 'intermediate').toLowerCase()
+  const degreeLevel = String(degree.level || 'bachelor').toLowerCase()
+  const targetAudience = (degree.targetAudience || []).map((t) => String(t).toLowerCase())
+
+  if (['matric', 'olevel'].includes(studentLevel)) {
+    if (['intermediate', 'diploma'].includes(degreeLevel) || targetAudience.includes('matric') || targetAudience.includes('olevel')) {
+      score += 10
+      reasons.push(`Direct 2-Year Intermediate / Diploma progression for Matric graduates`)
+    } else if (degreeLevel === 'master' || degreeLevel === 'lateral_bs') {
+      score -= 15
+    }
+  } else if (['adp', 'ba_bsc'].includes(studentLevel)) {
+    if (['lateral_bs', 'master'].includes(degreeLevel) || targetAudience.includes('adp') || targetAudience.includes('ba_bsc')) {
+      score += 10
+      reasons.push(`2-Year BS 5th Semester / Conversion degree designed for ADP/BA/BSc holders`)
+    } else if (['intermediate', 'diploma'].includes(degreeLevel)) {
+      score -= 15
+    }
+  } else if (['bachelor', 'master'].includes(studentLevel)) {
+    if (['master'].includes(degreeLevel) || targetAudience.includes('bachelor')) {
+      score += 10
+      reasons.push(`Postgraduate Master's / MS program tailored for university graduates`)
+    } else if (['intermediate', 'diploma'].includes(degreeLevel)) {
+      score -= 15
+    }
+  } else {
+    // Intermediate / FSc / ICS / DAE / A-Level students
+    if (['bachelor', 'associate'].includes(degreeLevel) || degreeLevel === 'bachelor') {
+      score += 10
+      reasons.push(`4-Year accredited Bachelor's degree aligned with your HSSC background`)
+    } else if (['intermediate', 'diploma'].includes(degreeLevel) && !['dae'].includes(studentLevel)) {
+      score -= 10
+    }
+  }
+
   // GPA / grade bonus
   const gpa = student.gpa || student.cgpa || 0
   if (gpa >= 3.5) score += 5

@@ -172,6 +172,8 @@ const getRecommendations = asyncHandler(async (req, res) => {
       degreeId: rec.degree._id,
       name: rec.degree.name,
       shortName: rec.degree.shortName,
+      level: rec.degree.level || 'bachelor',
+      institutionType: rec.degree.institutionType,
       field: rec.degree.field,
       duration: rec.degree.duration,
       description: rec.degree.description,

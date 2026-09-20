@@ -193,6 +193,7 @@
               <option value="dae">DAE (Diploma of Associate Engineering)</option>
               <option value="olevel">O-Levels</option>
               <option value="alevel">A-Levels</option>
+              <option value="adp">Associate Degree (ADP / 2-Year BA / BSc)</option>
               <option value="bachelor">Bachelor / Undergraduate</option>
               <option value="master">Master / Postgraduate</option>
             </select>
@@ -218,6 +219,11 @@
             <label for="previousQualification">Previous Qualification</label>
             <select id="previousQualification" onchange="autoFillQualificationDefaults(this.value)">
               <option value="">Select Qualification</option>
+              <optgroup label="Matriculation (SSC / 10th Grade)">
+                <option value="Matric Science (Biology)">Matric Science (Biology)</option>
+                <option value="Matric Science (Computer)">Matric Science (Computer)</option>
+                <option value="Matric Arts / General">Matric Arts / General</option>
+              </optgroup>
               <optgroup label="Intermediate (HSSC / 12th Grade)">
                 <option value="FSc Pre-Engineering">FSc Pre-Engineering</option>
                 <option value="FSc Pre-Medical">FSc Pre-Medical</option>
@@ -241,13 +247,14 @@
                 <option value="O-Levels Science / Computer">O-Levels Science / Computer</option>
                 <option value="O-Levels Arts / Humanities">O-Levels Arts / Humanities</option>
               </optgroup>
-              <optgroup label="Matriculation (SSC / 10th Grade)">
-                <option value="Matric Science (Biology)">Matric Science (Biology)</option>
-                <option value="Matric Science (Computer)">Matric Science (Computer)</option>
-                <option value="Matric Arts / General">Matric Arts / General</option>
+              <optgroup label="Associate Degree / 2-Year Graduation (ADP / BA / BSc)">
+                <option value="Associate Degree in Computer Science (ADP-CS)">Associate Degree in Computer Science (ADP-CS)</option>
+                <option value="Associate Degree in Commerce / Business (ADP / B.Com)">Associate Degree in Commerce / Business (ADP / B.Com)</option>
+                <option value="Associate Degree in Arts / Social Sciences (ADP / BA)">Associate Degree in Arts / Social Sciences (ADP / BA)</option>
+                <option value="Associate Degree in Science (ADP / BSc General)">Associate Degree in Science (ADP / BSc General)</option>
               </optgroup>
               <optgroup label="Undergraduate & Postgraduate">
-                <option value="Bachelor / BS Graduate">Bachelor / BS Graduate</option>
+                <option value="Bachelor / BS Graduate (16-Year Education)">Bachelor / BS Graduate (16-Year Education)</option>
                 <option value="Master / Postgraduate">Master / Postgraduate</option>
               </optgroup>
             </select>
@@ -654,11 +661,28 @@
         const streamSelect = document.getElementById('majorStream')
         if (!qualification || !streamSelect) return
 
-        if (qualification.includes('Pre-Engineering')) {
+        // Clear existing selections before auto-populating
+        document.querySelectorAll('#subjectsGrid .interest-chip, #strongSubjectsGrid .interest-chip').forEach((el) => {
+          el.classList.remove('selected')
+        })
+
+        if (qualification.includes('Matric Science (Biology)')) {
+          streamSelect.value = 'science'
+          selectChipsByValues('subjectsGrid', ['Biology', 'Chemistry', 'Physics', 'Mathematics', 'English'])
+          selectChipsByValues('strongSubjectsGrid', ['Biology', 'Chemistry'])
+        } else if (qualification.includes('Matric Science (Computer)')) {
+          streamSelect.value = 'technology'
+          selectChipsByValues('subjectsGrid', ['Computer', 'Mathematics', 'Physics', 'Chemistry', 'English'])
+          selectChipsByValues('strongSubjectsGrid', ['Computer', 'Mathematics'])
+        } else if (qualification.includes('Matric Arts')) {
+          streamSelect.value = 'arts'
+          selectChipsByValues('subjectsGrid', ['English', 'Urdu', 'Pakistan Studies', 'Art'])
+          selectChipsByValues('strongSubjectsGrid', ['English', 'Art'])
+        } else if (qualification.includes('Pre-Engineering') || qualification.includes('A-Levels Pre-Engineering')) {
           streamSelect.value = 'science'
           selectChipsByValues('subjectsGrid', ['Mathematics', 'Physics', 'Chemistry', 'English'])
           selectChipsByValues('strongSubjectsGrid', ['Mathematics', 'Physics'])
-        } else if (qualification.includes('Pre-Medical')) {
+        } else if (qualification.includes('Pre-Medical') || qualification.includes('A-Levels Pre-Medical')) {
           streamSelect.value = 'science'
           selectChipsByValues('subjectsGrid', ['Biology', 'Chemistry', 'Physics', 'English'])
           selectChipsByValues('strongSubjectsGrid', ['Biology', 'Chemistry'])
@@ -666,7 +690,7 @@
           streamSelect.value = 'technology'
           selectChipsByValues('subjectsGrid', ['Computer', 'Mathematics', 'Physics', 'Statistics'])
           selectChipsByValues('strongSubjectsGrid', ['Computer', 'Mathematics'])
-        } else if (qualification.includes('I.Com')) {
+        } else if (qualification.includes('I.Com') || qualification.includes('Business & Economics')) {
           streamSelect.value = 'commerce'
           selectChipsByValues('subjectsGrid', ['Accounting', 'Economics', 'Mathematics', 'English'])
           selectChipsByValues('strongSubjectsGrid', ['Accounting', 'Economics'])
@@ -677,6 +701,19 @@
         } else if (qualification.includes('Arts') || qualification.includes('FA')) {
           streamSelect.value = 'arts'
           selectChipsByValues('subjectsGrid', ['English', 'Urdu', 'Sociology', 'Art'])
+          selectChipsByValues('strongSubjectsGrid', ['English', 'Sociology'])
+        } else if (qualification.includes('ADP-CS') || qualification.includes('ADP in Computer Science')) {
+          streamSelect.value = 'technology'
+          selectChipsByValues('subjectsGrid', ['Computer', 'Mathematics', 'Statistics'])
+          selectChipsByValues('strongSubjectsGrid', ['Computer', 'Mathematics'])
+        } else if (qualification.includes('ADP') || qualification.includes('B.Com')) {
+          streamSelect.value = 'commerce'
+          selectChipsByValues('subjectsGrid', ['Accounting', 'Economics', 'Mathematics'])
+          selectChipsByValues('strongSubjectsGrid', ['Accounting', 'Economics'])
+        } else if (qualification.includes('Bachelor') || qualification.includes('Master')) {
+          streamSelect.value = 'technology'
+          selectChipsByValues('subjectsGrid', ['Computer', 'Mathematics', 'English'])
+          selectChipsByValues('strongSubjectsGrid', ['Computer'])
         }
       }
 

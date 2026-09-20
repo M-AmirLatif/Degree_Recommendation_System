@@ -7,11 +7,28 @@ const degreeSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
-      // e.g. "BS Computer Science", "MBBS", "BBA"
+      // e.g. "BS Computer Science", "FSc Pre-Medical (Intermediate)", "DAE Electrical Diploma", "MS Data Science"
     },
     shortName: {
       type: String,
-      // e.g. "BSCS", "MBBS", "BBA"
+      // e.g. "BSCS", "FSC-MED", "DAE-EE", "MS-DS"
+    },
+    level: {
+      type: String,
+      enum: ['intermediate', 'diploma', 'associate', 'bachelor', 'lateral_bs', 'master', 'all'],
+      default: 'bachelor',
+      // e.g. 'intermediate' (2 yrs), 'diploma' (3 yrs), 'bachelor' (4-5 yrs), 'lateral_bs' (2 yrs), 'master' (2 yrs)
+    },
+    targetAudience: [
+      {
+        type: String,
+        // e.g. ["matric", "olevel"] or ["intermediate", "fsc", "ics", "dae", "alevel"] or ["adp", "ba_bsc"] or ["bachelor"]
+      },
+    ],
+    institutionType: {
+      type: String,
+      default: 'Universities',
+      // e.g. "Higher Secondary Colleges", "Technical Boards & Poly-Institutes", "Universities & DAIs"
     },
     field: {
       type: String,
@@ -23,7 +40,7 @@ const degreeSchema = new mongoose.Schema(
     },
     duration: {
       type: String,
-      // e.g. "4 years", "5 years"
+      // e.g. "2 years", "3 years", "4 years", "5 years"
     },
 
     // ── REQUIREMENTS ───────────────────────────
@@ -36,17 +53,16 @@ const degreeSchema = new mongoose.Schema(
     requiredStream: [
       {
         type: String,
-        enum: ['science', 'commerce', 'arts', 'technology', 'any'],
-        // e.g. ["science"] for MBBS
+        // e.g. ["science", "pre-medical", "pre-engineering", "ics", "commerce", "arts", "dae", "any"]
       },
     ],
     minGPA: {
       type: Number,
       default: 2.0,
-      // minimum GPA required
+      // minimum GPA or equivalent percentage (60% = 2.5) required
     },
 
-    // ── UNIVERSITIES IN PAKISTAN ───────────────
+    // ── INSTITUTIONS IN PAKISTAN ───────────────
     universities: [
       {
         name: { type: String },
@@ -54,7 +70,7 @@ const degreeSchema = new mongoose.Schema(
         ranking: { type: Number },
         feePerYear: { type: String },
         hasScholarship: { type: Boolean, default: false },
-        admissionTest: { type: String }, // e.g. "ECAT", "MDCAT", "NAT"
+        admissionTest: { type: String }, // e.g. "Matric BISE Merit", "ECAT", "MDCAT", "NAT", "GAT"
         website: { type: String },
       },
     ],
@@ -63,12 +79,12 @@ const degreeSchema = new mongoose.Schema(
     careerOutcomes: [
       {
         type: String,
-        // e.g. ["Software Engineer", "Data Scientist", "Web Developer"]
+        // e.g. ["Software Engineer", "Data Scientist", "Pre-Med College Pathway"]
       },
     ],
     expectedSalary: {
       type: String,
-      // e.g. "PKR 80,000 - 200,000/month"
+      // e.g. "PKR 80,000 - 200,000/month" or "Higher Studies / Intermediate Pathway"
     },
     jobMarket: {
       type: String,
@@ -77,7 +93,6 @@ const degreeSchema = new mongoose.Schema(
     },
 
     // ── MATCHING WEIGHTS ──────────────────────
-    // What kind of student fits this degree
     idealInterestAreas: [{ type: String }],
     idealActivities: [{ type: String }],
     idealAnalytical: { type: String, enum: ['low', 'medium', 'high'] },
@@ -96,9 +111,9 @@ const degreeSchema = new mongoose.Schema(
   { timestamps: true },
 )
 
-degreeSchema.index({ isActive: 1, field: 1 })
+degreeSchema.index({ isActive: 1, field: 1, level: 1 })
+degreeSchema.index({ targetAudience: 1, isActive: 1 })
 degreeSchema.index({ requiredStream: 1, isActive: 1 })
 degreeSchema.index({ name: 'text', description: 'text', careerOutcomes: 'text' })
 
 module.exports = mongoose.model('Degree', degreeSchema)
-
