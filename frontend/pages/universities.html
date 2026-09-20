@@ -10,6 +10,39 @@
     <script src="../js/notifications.js"></script>
     <script src="../js/auth.js"></script>
     <style>
+      .nav-toggle {
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 5px;
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        cursor: pointer;
+        padding: 8px;
+        z-index: 200;
+      }
+      .nav-toggle span {
+        display: block;
+        width: 20px;
+        height: 2px;
+        background: #f1f5f9;
+        border-radius: 2px;
+        transition: all 0.3s ease;
+      }
+      .nav-toggle.open span:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+      }
+      .nav-toggle.open span:nth-child(2) {
+        opacity: 0;
+      }
+      .nav-toggle.open span:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
+      }
+
       .filter-card {
         background: rgba(15, 23, 42, 0.7);
         border: 1px solid rgba(133, 158, 196, 0.2);
@@ -26,7 +59,7 @@
       }
       .uni-cards-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
         gap: 20px;
       }
       .uni-card {
@@ -66,12 +99,49 @@
         border: 1px solid rgba(99, 102, 241, 0.3);
         white-space: nowrap;
       }
+
+      @media (max-width: 768px) {
+        .navbar {
+          flex-wrap: wrap;
+          height: auto !important;
+          padding: 14px 20px !important;
+        }
+        .nav-toggle {
+          display: flex;
+        }
+        .nav-links {
+          display: none;
+          flex-direction: column;
+          width: 100%;
+          gap: 4px !important;
+          padding: 12px 0 4px;
+        }
+        .nav-links.open {
+          display: flex;
+        }
+        .navbar .nav-links a,
+        .navbar .nav-links .btn-logout {
+          width: 100%;
+          padding: 10px 14px !important;
+          border-radius: 8px !important;
+          font-size: 14px !important;
+        }
+        .filter-grid {
+          grid-template-columns: 1fr;
+        }
+        .uni-cards-grid {
+          grid-template-columns: 1fr;
+        }
+      }
     </style>
   </head>
   <body class="page-dashboard">
     <div class="navbar">
       <span class="logo">Degree Recommender</span>
-      <div class="nav-links">
+      <button class="nav-toggle" onclick="toggleNav()" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="nav-links" id="navLinks">
         <span id="navName" class="nav-name"></span>
         <a href="dashboard.html">Dashboard</a>
         <a href="recommendations.html">Recommendations</a>
@@ -138,62 +208,79 @@
       <!-- University Grid -->
       <div id="universityGrid" class="uni-cards-grid">
         <div class="loading-state" style="text-align:center; padding:40px; grid-column:1/-1;">
-          <p>Loading real-time university database...</p>
+          <p>Loading real-time institution database...</p>
         </div>
       </div>
     </div>
 
     <script>
-      const { apiFetch, requireAuth } = window.AUTH_CLIENT
+      function toggleNav() {
+        document.getElementById('navLinks').classList.toggle('open')
+        document.querySelector('.nav-toggle').classList.toggle('open')
+      }
+
       let allUniversities = []
 
       async function loadData() {
-        try {
-          const profile = await requireAuth()
-          if (!profile) return
-          document.getElementById('navName').textContent = profile.name || ''
+        const studentName = localStorage.getItem('studentName')
+        if (studentName) {
+          const navName = document.getElementById('navName')
+          if (navName) navName.textContent = `👤 ${studentName}`
+        }
 
-          const degrees = await apiFetch('/degrees')
-          
+        try {
+          const response = await window.AUTH_CLIENT.apiFetch('/degrees')
+          const degrees = response.degrees || []
+
           const uniMap = new Map()
-          degrees.forEach((d) => {
-            (d.universities || []).forEach((u) => {
-              const key = `${u.name}-${u.location}`
+          degrees.forEach((deg) => {
+            (deg.universities || []).forEach((u) => {
+              if (!u.name) return
+              const key = u.name.trim().toLowerCase()
               if (!uniMap.has(key)) {
                 uniMap.set(key, {
                   name: u.name,
                   location: u.location || 'Pakistan',
-                  ranking: u.ranking || 5,
-                  feePerYear: u.feePerYear || 'Standard Govt/Private',
+                  ranking: u.ranking || 99,
+                  feePerYear: u.feePerYear || 'Standard',
                   hasScholarship: Boolean(u.hasScholarship),
-                  admissionTest: u.admissionTest || 'University Entry Test',
-                  website: u.website || '#',
-                  offeredDegrees: [d.shortName || d.name],
+                  admissionTest: u.admissionTest || 'None',
+                  website: u.website || 'https://hec.gov.pk',
+                  offeredDegrees: [deg.shortName || deg.name],
                 })
               } else {
                 const existing = uniMap.get(key)
-                if (!existing.offeredDegrees.includes(d.shortName || d.name)) {
-                  existing.offeredDegrees.push(d.shortName || d.name)
+                if (!existing.offeredDegrees.includes(deg.shortName || deg.name)) {
+                  existing.offeredDegrees.push(deg.shortName || deg.name)
                 }
+                if (u.hasScholarship) existing.hasScholarship = true
               }
             })
           })
 
-          allUniversities = Array.from(uniMap.values())
+          allUniversities = Array.from(uniMap.values()).sort((a, b) => a.ranking - b.ranking)
           renderUniversities(allUniversities)
         } catch (err) {
-          document.getElementById('universityGrid').innerHTML = `<div class="alert alert-error">Failed to load universities: ${err.message}</div>`
+          document.getElementById('universityGrid').innerHTML = `
+            <div class="alert alert-error" style="grid-column:1/-1;">
+              Failed to load institutions: ${err.message}. Please check backend status.
+            </div>
+          `
         }
       }
 
       function renderUniversities(list) {
         const grid = document.getElementById('universityGrid')
-        const count = document.getElementById('resultsCount')
+        const countEl = document.getElementById('resultsCount')
 
-        count.textContent = `Showing ${list.length} verified institution${list.length === 1 ? '' : 's'}`
+        countEl.textContent = `Showing ${list.length} verified institution${list.length === 1 ? '' : 's'}`
 
-        if (!list.length) {
-          grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:#94a3b8;">No institutions match your selected filter criteria.</div>'
+        if (list.length === 0) {
+          grid.innerHTML = `
+            <div class="empty-text" style="grid-column:1/-1; text-align:center; padding:40px;">
+              <p>No institutions match your search criteria. Try removing filters.</p>
+            </div>
+          `
           return
         }
 
