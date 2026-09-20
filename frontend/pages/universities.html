@@ -200,9 +200,12 @@
         </div>
       </div>
 
-      <!-- Results Count -->
+      <!-- Results Count & Reset -->
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
         <span id="resultsCount" style="color:#94a3b8; font-size:0.9rem;">Loading verified institutions...</span>
+        <button id="resetFiltersBtn" onclick="resetFilters()" class="btn btn-secondary" style="padding:6px 14px; font-size:0.8rem; display:none;">
+          ↺ Reset All Filters
+        </button>
       </div>
 
       <!-- University Grid -->
@@ -269,16 +272,37 @@
         }
       }
 
+      function resetFilters() {
+        document.getElementById('searchQuery').value = ''
+        document.getElementById('cityFilter').value = ''
+        document.getElementById('testFilter').value = ''
+        document.getElementById('scholarshipFilter').checked = false
+        applyFilters()
+      }
+
       function renderUniversities(list) {
         const grid = document.getElementById('universityGrid')
         const countEl = document.getElementById('resultsCount')
+        const resetBtn = document.getElementById('resetFiltersBtn')
+
+        const hasActiveFilters = 
+          document.getElementById('searchQuery').value.trim() !== '' ||
+          document.getElementById('cityFilter').value !== '' ||
+          document.getElementById('testFilter').value !== '' ||
+          document.getElementById('scholarshipFilter').checked
+
+        if (resetBtn) resetBtn.style.display = hasActiveFilters ? 'inline-block' : 'none'
 
         countEl.textContent = `Showing ${list.length} verified institution${list.length === 1 ? '' : 's'}`
 
         if (list.length === 0) {
           grid.innerHTML = `
-            <div class="empty-text" style="grid-column:1/-1; text-align:center; padding:40px;">
-              <p>No institutions match your search criteria. Try removing filters.</p>
+            <div class="empty-text" style="grid-column:1/-1; text-align:center; padding:50px 20px; background:rgba(255,255,255,0.02); border:1px dashed rgba(255,255,255,0.1); border-radius:12px;">
+              <p style="font-size:1.1rem; color:#f87171; margin-bottom:8px;">⚠️ No institutions match the combined filters.</p>
+              <p style="color:#94a3b8; font-size:0.9rem; margin-bottom:16px;">(e.g., NUST is located in <strong>Islamabad</strong>, not Lahore. Setting City to "All Cities" or "Islamabad" will show NUST.)</p>
+              <button onclick="resetFilters()" class="btn btn-primary" style="padding:8px 20px; font-size:0.9rem;">
+                ↺ Reset All Filters
+              </button>
             </div>
           `
           return
