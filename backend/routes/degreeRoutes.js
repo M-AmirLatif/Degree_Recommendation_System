@@ -6,6 +6,11 @@ const isAdmin = require('../middleware/adminMiddleware')
 const { validateDegree } = require('../middleware/validateMiddleware')
 const asyncHandler = require('../middleware/asyncHandler')
 const { recordAuditEvent } = require('../utils/auditLogger')
+const { compareDegrees } = require('../controllers/recommendationController')
+const { flushCache } = require('../utils/cache')
+
+// Compare degrees (open to authenticated students)
+router.post('/compare', protect, compareDegrees)
 
 router.get(
   '/',
@@ -39,6 +44,7 @@ router.post(
   asyncHandler(async (req, res) => {
     const degree = new Degree(req.body)
     const saved = await degree.save()
+    flushCache()
     await recordAuditEvent(req, {
       action: 'admin.degree.created',
       entityType: 'Degree',
@@ -64,6 +70,7 @@ router.put(
       runValidators: true,
     })
     if (!degree) return res.status(404).json({ message: 'Degree not found' })
+    flushCache()
     await recordAuditEvent(req, {
       action: 'admin.degree.updated',
       entityType: 'Degree',
@@ -90,6 +97,7 @@ router.delete(
       { new: true },
     )
     if (!degree) return res.status(404).json({ message: 'Degree not found' })
+    flushCache()
     await recordAuditEvent(req, {
       action: 'admin.degree.deactivated',
       entityType: 'Degree',

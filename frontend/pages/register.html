@@ -144,8 +144,8 @@
           Answer a few questions to get personalized degree recommendations
         </p>
 
-        <div class="alert alert-error" id="errorAlert"></div>
-        <div class="alert alert-success" id="successAlert"></div>
+        <div class="alert alert-error" id="errorAlert" style="display:none;"></div>
+        <div class="alert alert-success" id="successAlert" style="display:none;"></div>
 
         <!-- Step Indicator -->
         <div class="step-indicator">
@@ -188,14 +188,13 @@
             <label for="educationLevel">Current Education Level</label>
             <select id="educationLevel">
               <option value="">Select Level</option>
-              <option value="matric">Matric (Grade 10)</option>
-              <option value="intermediate">
-                Intermediate (FSc / ICS / FA)
-              </option>
-              <option value="bachelor">
-                Bachelor (Currently in University)
-              </option>
-              <option value="master">Master</option>
+              <option value="matric">Matriculation (10th Grade / SSC)</option>
+              <option value="intermediate">Intermediate (FSc / ICS / I.Com / FA)</option>
+              <option value="dae">DAE (Diploma of Associate Engineering)</option>
+              <option value="olevel">O-Levels</option>
+              <option value="alevel">A-Levels</option>
+              <option value="bachelor">Bachelor / Undergraduate</option>
+              <option value="master">Master / Postgraduate</option>
             </select>
           </div>
 
@@ -217,21 +216,40 @@
 
           <div class="form-group">
             <label for="previousQualification">Previous Qualification</label>
-            <select id="previousQualification">
+            <select id="previousQualification" onchange="autoFillQualificationDefaults(this.value)">
               <option value="">Select Qualification</option>
-              <option value="FSc Pre-Engineering">FSc Pre-Engineering</option>
-              <option value="FSc Pre-Medical">FSc Pre-Medical</option>
-              <option value="ICS (Computer Science)">
-                ICS (Computer Science)
-              </option>
-              <option value="ICS (Statistics)">ICS (Statistics)</option>
-              <option value="ICom">ICom (Commerce)</option>
-              <option value="FA (Arts)">FA (Arts)</option>
-              <option value="A-Levels">A-Levels</option>
-              <option value="O-Levels">O-Levels</option>
-              <option value="Matric Science">Matric Science</option>
-              <option value="Matric Arts">Matric Arts</option>
-              <option value="Bachelor">Already in Bachelor</option>
+              <optgroup label="Intermediate (HSSC / 12th Grade)">
+                <option value="FSc Pre-Engineering">FSc Pre-Engineering</option>
+                <option value="FSc Pre-Medical">FSc Pre-Medical</option>
+                <option value="ICS (Computer Science & Physics)">ICS (Computer Science & Physics)</option>
+                <option value="ICS (Computer Science & Statistics)">ICS (Computer Science & Statistics)</option>
+                <option value="I.Com (Commerce & Accounting)">I.Com (Commerce & Accounting)</option>
+                <option value="FA (Humanities & Arts)">FA (Humanities & Arts)</option>
+                <option value="FA General Science">FA General Science</option>
+              </optgroup>
+              <optgroup label="Technical & Vocational (DAE)">
+                <option value="DAE Electrical Engineering">DAE Electrical Engineering</option>
+                <option value="DAE Civil Engineering">DAE Civil Engineering</option>
+                <option value="DAE Mechanical Engineering">DAE Mechanical Engineering</option>
+                <option value="DAE Information Technology">DAE Information Technology</option>
+                <option value="DAE Electronics">DAE Electronics</option>
+              </optgroup>
+              <optgroup label="International Cambridge (O/A Levels)">
+                <option value="A-Levels Pre-Engineering">A-Levels Pre-Engineering</option>
+                <option value="A-Levels Pre-Medical">A-Levels Pre-Medical</option>
+                <option value="A-Levels Business & Economics">A-Levels Business & Economics</option>
+                <option value="O-Levels Science / Computer">O-Levels Science / Computer</option>
+                <option value="O-Levels Arts / Humanities">O-Levels Arts / Humanities</option>
+              </optgroup>
+              <optgroup label="Matriculation (SSC / 10th Grade)">
+                <option value="Matric Science (Biology)">Matric Science (Biology)</option>
+                <option value="Matric Science (Computer)">Matric Science (Computer)</option>
+                <option value="Matric Arts / General">Matric Arts / General</option>
+              </optgroup>
+              <optgroup label="Undergraduate & Postgraduate">
+                <option value="Bachelor / BS Graduate">Bachelor / BS Graduate</option>
+                <option value="Master / Postgraduate">Master / Postgraduate</option>
+              </optgroup>
             </select>
           </div>
 
@@ -240,9 +258,10 @@
             <select id="majorStream">
               <option value="">Select Stream</option>
               <option value="science">Science</option>
-              <option value="commerce">Commerce</option>
-              <option value="arts">Arts / Humanities</option>
-              <option value="technology">Technology (ICS / IT)</option>
+              <option value="technology">Technology (ICS / IT / Computing)</option>
+              <option value="commerce">Commerce & Finance</option>
+              <option value="arts">Arts & Humanities</option>
+              <option value="dae">Technical Engineering (DAE)</option>
               <option value="other">Other</option>
             </select>
           </div>
@@ -262,9 +281,7 @@
           </div>
 
           <div class="form-group">
-            <label for="gpa"
-              >GPA / Percentage (out of 4.0 or convert: 80% = 3.2)</label
-            >
+            <label for="gpa">GPA / Percentage (out of 4.0 or convert: 80% = 3.2)</label>
             <input
               type="number"
               id="gpa"
@@ -311,7 +328,7 @@
                 🟡 Low
               </button>
               <button
-                class="rating-btn"
+                class="rating-btn selected"
                 onclick="selectRating('analytical', 'medium', this)"
               >
                 🟠 Medium
@@ -320,14 +337,14 @@
                 class="rating-btn"
                 onclick="selectRating('analytical', 'high', this)"
               >
-                🔴 High
+                🟢 High
               </button>
             </div>
           </div>
 
           <div class="form-group">
-            <label>Communication Skills</label>
-            <div class="rating-group" id="communicationGroup">
+            <label>Communication & Expression</label>
+            <div class="rating-group" id="commGroup">
               <button
                 class="rating-btn"
                 onclick="selectRating('communication', 'low', this)"
@@ -335,7 +352,7 @@
                 🟡 Low
               </button>
               <button
-                class="rating-btn"
+                class="rating-btn selected"
                 onclick="selectRating('communication', 'medium', this)"
               >
                 🟠 Medium
@@ -344,7 +361,7 @@
                 class="rating-btn"
                 onclick="selectRating('communication', 'high', this)"
               >
-                🔴 High
+                🟢 High
               </button>
             </div>
           </div>
@@ -359,7 +376,7 @@
                 🟡 Low
               </button>
               <button
-                class="rating-btn"
+                class="rating-btn selected"
                 onclick="selectRating('creativity', 'medium', this)"
               >
                 🟠 Medium
@@ -368,57 +385,32 @@
                 class="rating-btn"
                 onclick="selectRating('creativity', 'high', this)"
               >
-                🔴 High
+                🟢 High
               </button>
             </div>
           </div>
 
-          <div class="form-grid form-grid-2">
-            <div class="form-group">
-              <label>Learning Preference</label>
-              <div class="rating-group" id="workPrefGroup">
-                <button
-                  class="rating-btn"
-                  onclick="selectRating('workPref', 'theory', this)"
-                >
-                  📚 Theory
-                </button>
-                <button
-                  class="rating-btn"
-                  onclick="selectRating('workPref', 'practical', this)"
-                >
-                  🔧 Practical
-                </button>
-                <button
-                  class="rating-btn"
-                  onclick="selectRating('workPref', 'both', this)"
-                >
-                  ⚡ Both
-                </button>
-              </div>
-            </div>
-            <div class="form-group">
-              <label>Work Style</label>
-              <div class="rating-group" id="teamPrefGroup">
-                <button
-                  class="rating-btn"
-                  onclick="selectRating('teamPref', 'individual', this)"
-                >
-                  🧑 Solo
-                </button>
-                <button
-                  class="rating-btn"
-                  onclick="selectRating('teamPref', 'team', this)"
-                >
-                  👥 Team
-                </button>
-                <button
-                  class="rating-btn"
-                  onclick="selectRating('teamPref', 'both', this)"
-                >
-                  ⚡ Both
-                </button>
-              </div>
+          <div class="form-group">
+            <label>Work / Learning Preference</label>
+            <div class="rating-group" id="workPrefGroup">
+              <button
+                class="rating-btn"
+                onclick="selectRating('workPref', 'theory', this)"
+              >
+                📖 Theory
+              </button>
+              <button
+                class="rating-btn"
+                onclick="selectRating('workPref', 'practical', this)"
+              >
+                🛠️ Hands-on
+              </button>
+              <button
+                class="rating-btn selected"
+                onclick="selectRating('workPref', 'both', this)"
+              >
+                ⚖️ Both
+              </button>
             </div>
           </div>
 
@@ -432,18 +424,18 @@
           </div>
         </div>
 
-        <!-- ── STEP 4: Career & Constraints ── -->
+        <!-- ── STEP 4: Career Goals & Constraints ── -->
         <div id="step4" style="display: none">
           <p class="step-title">
             Step 4 of 4 — <span>Career Goals & Preferences</span>
           </p>
 
           <div class="form-group">
-            <label for="careerGoal">Career Goal</label>
+            <label for="careerGoal">Dream Career / Job Role</label>
             <input
               type="text"
               id="careerGoal"
-              placeholder="e.g. Software Engineer, Doctor, Businessman, Lawyer"
+              placeholder="e.g. Software Engineer, Doctor, Financial Analyst, Civil Engineer"
             />
           </div>
 
@@ -469,7 +461,7 @@
                 💻 Remote
               </button>
               <button
-                class="rating-btn"
+                class="rating-btn selected"
                 onclick="selectRating('workEnv', 'any', this)"
               >
                 ⚡ Any
@@ -484,10 +476,10 @@
                 class="rating-btn"
                 onclick="selectRating('budget', 'low', this)"
               >
-                💰 Low (Govt/Public)
+                💰 Low (Public)
               </button>
               <button
-                class="rating-btn"
+                class="rating-btn selected"
                 onclick="selectRating('budget', 'medium', this)"
               >
                 💰💰 Medium
@@ -496,7 +488,7 @@
                 class="rating-btn"
                 onclick="selectRating('budget', 'high', this)"
               >
-                💰💰💰 High (LUMS etc.)
+                💰💰💰 High
               </button>
             </div>
           </div>
@@ -523,7 +515,7 @@
                 💻 Online
               </button>
               <button
-                class="rating-btn"
+                class="rating-btn selected"
                 onclick="selectRating('studyLocation', 'any', this)"
               >
                 ⚡ Any
@@ -541,7 +533,7 @@
                 ✅ Yes
               </button>
               <button
-                class="rating-btn"
+                class="rating-btn selected"
                 onclick="selectRating('scholarship', 'no', this)"
               >
                 ❌ No
@@ -554,7 +546,7 @@
               ← Back
             </button>
             <button class="btn btn-primary" onclick="register()">
-              🚀 Create Account
+              🚀 Create Account & View Matches
             </button>
           </div>
         </div>
@@ -627,6 +619,7 @@
 
       function renderChips(items, containerId, type) {
         const container = document.getElementById(containerId)
+        if (!container) return
         container.innerHTML = ''
         items.forEach((item) => {
           const div = document.createElement('div')
@@ -649,6 +642,44 @@
         ).map((el) => el.dataset.value)
       }
 
+      function selectChipsByValues(containerId, values = []) {
+        document.querySelectorAll(`#${containerId} .interest-chip`).forEach((el) => {
+          if (values.includes(el.dataset.value)) {
+            el.classList.add('selected')
+          }
+        })
+      }
+
+      function autoFillQualificationDefaults(qualification) {
+        const streamSelect = document.getElementById('majorStream')
+        if (!qualification || !streamSelect) return
+
+        if (qualification.includes('Pre-Engineering')) {
+          streamSelect.value = 'science'
+          selectChipsByValues('subjectsGrid', ['Mathematics', 'Physics', 'Chemistry', 'English'])
+          selectChipsByValues('strongSubjectsGrid', ['Mathematics', 'Physics'])
+        } else if (qualification.includes('Pre-Medical')) {
+          streamSelect.value = 'science'
+          selectChipsByValues('subjectsGrid', ['Biology', 'Chemistry', 'Physics', 'English'])
+          selectChipsByValues('strongSubjectsGrid', ['Biology', 'Chemistry'])
+        } else if (qualification.includes('ICS')) {
+          streamSelect.value = 'technology'
+          selectChipsByValues('subjectsGrid', ['Computer', 'Mathematics', 'Physics', 'Statistics'])
+          selectChipsByValues('strongSubjectsGrid', ['Computer', 'Mathematics'])
+        } else if (qualification.includes('I.Com')) {
+          streamSelect.value = 'commerce'
+          selectChipsByValues('subjectsGrid', ['Accounting', 'Economics', 'Mathematics', 'English'])
+          selectChipsByValues('strongSubjectsGrid', ['Accounting', 'Economics'])
+        } else if (qualification.includes('DAE')) {
+          streamSelect.value = 'dae'
+          selectChipsByValues('subjectsGrid', ['Mathematics', 'Physics', 'Computer'])
+          selectChipsByValues('strongSubjectsGrid', ['Physics', 'Mathematics'])
+        } else if (qualification.includes('Arts') || qualification.includes('FA')) {
+          streamSelect.value = 'arts'
+          selectChipsByValues('subjectsGrid', ['English', 'Urdu', 'Sociology', 'Art'])
+        }
+      }
+
       function selectRating(key, value, btn) {
         ratings[key] = value
         const group = btn.closest('.rating-group')
@@ -663,7 +694,6 @@
         const errorAlert = document.getElementById('errorAlert')
         errorAlert.style.display = 'none'
 
-        // Validate current step before moving
         if (step === 2) {
           const name = document.getElementById('name').value.trim()
           const studentId = document.getElementById('studentId').value.trim()
@@ -682,16 +712,20 @@
           }
         }
 
-        // Hide all steps
         for (let i = 1; i <= 4; i++) {
-          document.getElementById(`step${i}`).style.display = 'none'
+          const s = document.getElementById(`step${i}`)
+          if (s) s.style.display = 'none'
           const dot = document.getElementById(`dot${i}`)
-          dot.classList.remove('active', 'done')
-          if (i < step) dot.classList.add('done')
+          if (dot) {
+            dot.classList.remove('active', 'done')
+            if (i < step) dot.classList.add('done')
+          }
         }
 
-        document.getElementById(`step${step}`).style.display = 'block'
-        document.getElementById(`dot${step}`).classList.add('active')
+        const targetStep = document.getElementById(`step${step}`)
+        if (targetStep) targetStep.style.display = 'block'
+        const activeDot = document.getElementById(`dot${step}`)
+        if (activeDot) activeDot.classList.add('active')
         window.scrollTo({ top: 0, behavior: 'smooth' })
       }
 
@@ -705,7 +739,7 @@
         const careerGoal = document.getElementById('careerGoal').value.trim()
         if (!careerGoal) {
           errorAlert.style.display = 'block'
-          errorAlert.textContent = 'Please enter your career goal.'
+          errorAlert.textContent = 'Please enter your dream career goal.'
           return
         }
 
@@ -723,11 +757,8 @@
           email: document.getElementById('email').value.trim(),
           password: document.getElementById('password').value,
           educationLevel: document.getElementById('educationLevel').value,
-          previousQualification: document.getElementById(
-            'previousQualification',
-          ).value,
-          majorStream:
-            document.getElementById('majorStream').value || 'science',
+          previousQualification: document.getElementById('previousQualification').value,
+          majorStream: document.getElementById('majorStream').value || 'science',
           subjectsStudied: getSelectedChips('subjectsGrid'),
           strongSubjects: getSelectedChips('strongSubjectsGrid'),
           gpa: parseFloat(document.getElementById('gpa').value) || 0,
@@ -744,7 +775,6 @@
           budget: ratings.budget,
           studyLocation: ratings.studyLocation,
           needsScholarship: ratings.scholarship === 'yes',
-          // Legacy fields for backward compat
           department: 'General',
           semester: 1,
           skillLevel: 'beginner',

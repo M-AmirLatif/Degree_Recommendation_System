@@ -1,0 +1,113 @@
+/**
+ * Career Report Export Utility (Print/PDF)
+ */
+window.REPORT_EXPORTER = (function () {
+  function exportReport(recommendationData) {
+    if (!recommendationData || !recommendationData.recommendations) {
+      showAppAlert('No recommendation data available to export.', 'warning')
+      return
+    }
+
+    const student = recommendationData.student || 'Student'
+    const topRecs = (recommendationData.recommendations || []).slice(0, 5)
+
+    const reportHtml = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Career Counseling & Degree Report - ${student}</title>
+        <style>
+          body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #1e293b; line-height: 1.5; padding: 30px; margin: 0; }
+          .header { border-bottom: 3px solid #6366f1; padding-bottom: 15px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: flex-end; }
+          .logo { font-size: 24px; font-weight: bold; color: #4338ca; }
+          .meta { font-size: 13px; color: #64748b; }
+          .section-title { font-size: 18px; font-weight: bold; color: #1e1b4b; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; margin-top: 25px; margin-bottom: 12px; }
+          .student-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; background: #f8fafc; padding: 15px; border-radius: 8px; font-size: 14px; }
+          .card { border: 1px solid #cbd5e1; border-radius: 8px; padding: 16px; margin-bottom: 16px; page-break-inside: avoid; }
+          .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+          .degree-title { font-size: 16px; font-weight: bold; color: #312e81; }
+          .match-badge { background: #e0e7ff; color: #3730a3; padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 13px; }
+          .reasons { font-size: 13px; color: #334155; margin-top: 8px; }
+          .footer { margin-top: 40px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 15px; }
+          @media print {
+            .no-print { display: none; }
+            body { padding: 0; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div>
+            <div class="logo">🎓 Degree Recommender</div>
+            <div style="font-size:14px; color:#475569; margin-top:4px;">Comprehensive AI Academic & Career Counseling Scorecard</div>
+          </div>
+          <div class="meta">
+            <div><strong>Date:</strong> ${new Date().toLocaleDateString()}</div>
+            <div><strong>Student:</strong> ${student}</div>
+          </div>
+        </div>
+
+        <div class="section-title">Student Profile Summary</div>
+        <div class="student-grid">
+          <div><strong>Major Stream:</strong> ${(recommendationData.majorStream || 'Science').toUpperCase()}</div>
+          <div><strong>Career Goal:</strong> ${recommendationData.careerGoal || 'Not specified'}</div>
+          <div><strong>Interests:</strong> ${(recommendationData.interestAreas || []).join(', ') || 'N/A'}</div>
+          <div><strong>Total Degrees Analyzed:</strong> ${recommendationData.totalDegreesAnalyzed || 0}</div>
+          <div><strong>Education Level:</strong> ${recommendationData.educationLevel || 'Intermediate'}</div>
+          <div><strong>Previous Qualification:</strong> ${recommendationData.previousQualification || 'N/A'}</div>
+        </div>
+
+        <div class="section-title">Top Recommended Degree Pathways</div>
+        ${topRecs.map((rec, i) => `
+          <div class="card">
+            <div class="card-header">
+              <div class="degree-title">#${i + 1} ${rec.name} (${rec.shortName || rec.field})</div>
+              <div class="match-badge">${rec.matchPercentage}% Match (${rec.confidenceLabel})</div>
+            </div>
+            <p style="font-size:13px; color:#475569; margin:4px 0 8px 0;">${rec.description || ''}</p>
+            <div style="font-size:13px; display:flex; gap:20px; color:#1e293b; margin-bottom:8px;">
+              <div><strong>Salary Outlook:</strong> ${rec.expectedSalary || 'Market Standard'}</div>
+              <div><strong>Job Market:</strong> ${(rec.jobMarket || '').toUpperCase()}</div>
+              <div><strong>Duration:</strong> ${rec.duration || '4 years'}</div>
+            </div>
+            <div class="reasons">
+              <strong>Key Match Drivers:</strong>
+              <ul style="margin:4px 0 0 0; padding-left:18px;">
+                ${(rec.whyRecommended || []).map((r) => `<li>${r}</li>`).join('')}
+              </ul>
+            </div>
+            ${rec.universities && rec.universities.length > 0 ? `
+              <div style="margin-top:8px; font-size:12px; color:#64748b;">
+                <strong>Top Institutions:</strong> ${rec.universities.map((u) => u.name).join(', ')}
+              </div>
+            ` : ''}
+          </div>
+        `).join('')}
+
+        <div class="footer">
+          Generated by Degree Recommendation System • Personalized AI Academic Guidance
+        </div>
+
+        <script>
+          window.onload = function() {
+            window.print();
+          };
+        </script>
+      </body>
+      </html>
+    `
+
+    const printWindow = window.open('', '_blank')
+    if (printWindow) {
+      printWindow.document.open()
+      printWindow.document.write(reportHtml)
+      printWindow.document.close()
+    } else {
+      showAppAlert('Please allow popups to download your printable PDF report.', 'warning')
+    }
+  }
+
+  return {
+    exportReport,
+  }
+})()

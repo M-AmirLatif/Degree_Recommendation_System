@@ -124,4 +124,8 @@ const courseSchema = new mongoose.Schema(
   { timestamps: true },
 )
 
+courseSchema.index({ degree: 1, isActive: 1, semesterOffered: 1 })
+courseSchema.index({ isCore: 1, category: 1 })
+courseSchema.index({ tags: 1 })
+
 module.exports = mongoose.model('Course', courseSchema)

@@ -35,16 +35,35 @@ const scoreAcademic = (student, degree) => {
   const reasons = []
 
   // Stream match (15 points)
-  if (
-    degree.requiredStream.includes('any') ||
-    degree.requiredStream.length === 0
-  ) {
+  const streamEquivalence = {
+    'pre-medical': ['science', 'medical', 'pre-medical'],
+    'pre-engineering': ['science', 'engineering', 'technology', 'pre-engineering'],
+    'ics': ['technology', 'science', 'ics'],
+    'technology': ['technology', 'science', 'ics'],
+    'commerce': ['commerce', 'business', 'finance'],
+    'arts': ['arts', 'humanities', 'social-sciences'],
+    'humanities': ['arts', 'humanities', 'social-sciences'],
+    'dae': ['technology', 'engineering', 'dae', 'science'],
+    'science': ['science', 'technology', 'engineering', 'medical'],
+  }
+
+  const studentStreams = [
+    student.majorStream,
+    ...(streamEquivalence[student.majorStream] || []),
+  ].map((s) => String(s || '').toLowerCase())
+
+  const degreeStreams = (degree.requiredStream || []).map((s) => String(s || '').toLowerCase())
+
+  const isAnyStream = degreeStreams.includes('any') || degreeStreams.length === 0
+  const isDirectMatch = degreeStreams.some((ds) => studentStreams.includes(ds))
+
+  if (isAnyStream) {
     score += 10
-  } else if (degree.requiredStream.includes(student.majorStream)) {
+  } else if (isDirectMatch) {
     score += 15
-    reasons.push(`Your ${student.majorStream} stream matches this degree`)
+    reasons.push(`Your academic background (${student.majorStream || 'stream'}) aligns with this degree`)
   } else {
-    score -= 10 // wrong stream
+    score -= 5
   }
 
   // Required subjects match (15 points)

@@ -93,13 +93,20 @@ app.use('/api/admin', require('./routes/adminRoutes'))
 app.use('/api/degrees', require('./routes/degreeRoutes'))
 app.use('/api/degree-enrollments', require('./routes/degreeEnrollmentRoutes'))
 
+const swaggerUi = require('swagger-ui-express')
+const swaggerSpec = require('./config/swagger')
+
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
+
 app.get('/', (req, res) => {
   res.json({
     message: 'Degree Recommender API is running',
     status: 'healthy',
-    docs: '/health',
+    docs: '/api/docs',
+    health: '/health',
   })
 })
+
 
 app.use(notFound)
 app.use(errorHandler)

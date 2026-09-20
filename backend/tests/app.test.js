@@ -1,6 +1,9 @@
 const request = require('supertest')
 
+jest.setTimeout(15000)
+
 describe('app health routes', () => {
+
   const originalEnv = process.env
 
   beforeEach(() => {

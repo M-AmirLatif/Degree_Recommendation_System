@@ -12,16 +12,36 @@ const studentSchema = new mongoose.Schema(
     // ── ACADEMIC BACKGROUND ────────────────────
     educationLevel: {
       type: String,
-      enum: ['matric', 'intermediate', 'bachelor', 'master'],
+      enum: [
+        'matric',
+        'intermediate',
+        'dae',
+        'alevel',
+        'olevel',
+        'bachelor',
+        'master',
+        'other',
+      ],
       default: 'intermediate',
     },
     previousQualification: {
       type: String,
-      // e.g. "FSc Pre-Engineering", "ICS", "A-Levels", "O-Levels", "BCom"
+      // e.g. "FSc Pre-Engineering", "FSc Pre-Medical", "ICS", "I.Com", "FA", "DAE Mechanical", "A-Levels"
     },
     majorStream: {
       type: String,
-      enum: ['science', 'commerce', 'arts', 'technology', 'other'],
+      enum: [
+        'science',
+        'pre-medical',
+        'pre-engineering',
+        'ics',
+        'commerce',
+        'arts',
+        'humanities',
+        'technology',
+        'dae',
+        'other',
+      ],
       default: 'science',
     },
     subjectsStudied: [
@@ -49,6 +69,10 @@ const studentSchema = new mongoose.Schema(
       max: 4,
       default: 0,
     },
+
+    // ── PASSWORD RESET ─────────────────────────
+    resetPasswordToken: { type: String },
+    resetPasswordExpires: { type: Date },
 
     // ── INTERESTS ──────────────────────────────
     interestAreas: [
@@ -134,5 +158,10 @@ const studentSchema = new mongoose.Schema(
   },
   { timestamps: true },
 )
+
+studentSchema.index({ email: 1 })
+studentSchema.index({ studentId: 1 })
+studentSchema.index({ majorStream: 1, educationLevel: 1 })
+studentSchema.index({ resetPasswordToken: 1 })
 
 module.exports = mongoose.model('Student', studentSchema)

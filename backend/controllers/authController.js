@@ -230,10 +230,95 @@ const makeAdmin = asyncHandler(async (req, res) => {
     res.json({ message: 'User updated to admin', role: student.role })
 })
 
+// ─────────────────────────────────────────
+// @route   POST /api/auth/forgot-password
+// @desc    Generate password reset token
+// @access  Public
+// ─────────────────────────────────────────
+const crypto = require('crypto')
+
+
+const forgotPassword = asyncHandler(async (req, res) => {
+  const { email } = req.body
+  const normalizedEmail = String(email || '').trim().toLowerCase()
+
+  const student = await Student.findOne({ email: normalizedEmail })
+  if (!student) {
+    // Return friendly generic success message so user accounts cannot be enumerated
+    return res.json({
+      message: 'If an account exists with that email, a password reset token has been generated.',
+    })
+  }
+
+  // Generate 32-byte crypto token
+  const resetToken = crypto.randomBytes(32).toString('hex')
+  const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex')
+
+  student.resetPasswordToken = hashedToken
+  student.resetPasswordExpires = Date.now() + 15 * 60 * 1000 // 15 minutes validity
+  await student.save()
+
+  await recordAuditEvent(req, {
+    action: 'auth.forgot_password_requested',
+    entityType: 'Student',
+    entityId: student._id,
+    metadata: { email: student.email },
+  })
+
+  res.json({
+    message: 'Password reset token generated successfully. Valid for 15 minutes.',
+    resetToken, // Returned in JSON response for instant reset flow / SMS / direct UI testing
+  })
+})
+
+// ─────────────────────────────────────────
+// @route   POST /api/auth/reset-password
+// @desc    Reset password using reset token
+// @access  Public
+// ─────────────────────────────────────────
+const resetPassword = asyncHandler(async (req, res) => {
+  const { token, password } = req.body
+  if (!token || !password) {
+    return res.status(400).json({ message: 'Token and new password are required' })
+  }
+
+  if (password.length < 6) {
+    return res.status(400).json({ message: 'Password must be at least 6 characters long' })
+  }
+
+  const hashedToken = crypto.createHash('sha256').update(token).digest('hex')
+
+  const student = await Student.findOne({
+    resetPasswordToken: hashedToken,
+    resetPasswordExpires: { $gt: Date.now() },
+  })
+
+  if (!student) {
+    return res.status(400).json({ message: 'Password reset token is invalid or has expired' })
+  }
+
+  const salt = await bcrypt.genSalt(10)
+  student.password = await bcrypt.hash(password, salt)
+  student.resetPasswordToken = undefined
+  student.resetPasswordExpires = undefined
+  await student.save()
+
+  await recordAuditEvent(req, {
+    action: 'auth.password_reset_completed',
+    entityType: 'Student',
+    entityId: student._id,
+  })
+
+  res.json({ message: 'Password has been reset successfully. You can now log in.' })
+})
+
 module.exports = {
   registerStudent,
   loginStudent,
   logoutStudent,
   getProfile,
   makeAdmin,
+  forgotPassword,
+  resetPassword,
 }
+

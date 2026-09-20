@@ -96,4 +96,9 @@ const degreeSchema = new mongoose.Schema(
   { timestamps: true },
 )
 
+degreeSchema.index({ isActive: 1, field: 1 })
+degreeSchema.index({ requiredStream: 1, isActive: 1 })
+degreeSchema.index({ name: 'text', description: 'text', careerOutcomes: 'text' })
+
 module.exports = mongoose.model('Degree', degreeSchema)
+
