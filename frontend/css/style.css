@@ -412,12 +412,20 @@ body::before {
   letter-spacing: 0.3px;
   position: relative;
   overflow: hidden;
+  text-decoration: none !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-sizing: border-box;
 }
 
 .btn-primary {
   background: var(--gradient);
   color: white;
   box-shadow: 0 4px 20px var(--accent-glow);
+  text-decoration: none !important;
+  color: white !important;
 }
 
 .btn-primary:hover {
@@ -1708,6 +1716,7 @@ select:focus-visible {
   position: relative;
   z-index: 1;
   gap: 16px;
+  display: grid;
   grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
 }
 
@@ -1720,11 +1729,21 @@ select:focus-visible {
     rgba(10, 21, 45, 0.72),
     rgba(23, 40, 70, 0.56)
   );
-  min-height: 104px;
+  min-height: 96px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   transition: all 0.25s ease;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  box-sizing: border-box;
+}
+
+.page-dashboard .profile-panel .profile-item.profile-item-full {
+  grid-column: 1 / -1 !important;
+  min-height: auto;
+  padding: 18px 20px;
 }
 
 .page-dashboard .profile-panel .profile-item:hover {
@@ -1758,7 +1777,10 @@ select:focus-visible {
   font-size: 14px;
   font-weight: 600;
   letter-spacing: -0.2px;
-  line-height: 1.25;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  min-width: 0;
 }
 
 .page-dashboard .profile-panel .profile-interests {
@@ -2331,11 +2353,12 @@ select:focus-visible {
   position: relative;
   z-index: 1;
   gap: 16px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .page-recommendations .summary-item {
-  min-height: 108px;
+  min-height: 96px;
   padding: 16px 18px;
   border-radius: 14px;
   border: 1px solid rgba(133, 158, 196, 0.24);
@@ -2345,6 +2368,16 @@ select:focus-visible {
     rgba(23, 40, 70, 0.56)
   );
   transition: all 0.25s ease;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  box-sizing: border-box;
+}
+
+.page-recommendations .summary-item.summary-career {
+  grid-column: 1 / -1 !important;
+  min-height: auto;
+  padding: 18px 20px;
 }
 
 .page-recommendations .summary-item:hover {
@@ -2377,9 +2410,13 @@ select:focus-visible {
 
 .page-recommendations .summary-item p {
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: -0.2px;
   color: #f3f8ff;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  min-width: 0;
 }
 
 .page-recommendations .summary-item .tag-list {
@@ -3684,4 +3721,10 @@ select:focus-visible {
   .step-dot {
     width: 24px !important;
   }
+}
+
+
+.action-banner a.btn,
+.action-banner .btn {
+  text-decoration: none !important;
 }

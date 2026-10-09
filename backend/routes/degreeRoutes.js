@@ -7,7 +7,7 @@ const { validateDegree } = require('../middleware/validateMiddleware')
 const asyncHandler = require('../middleware/asyncHandler')
 const { recordAuditEvent } = require('../utils/auditLogger')
 const { compareDegrees } = require('../controllers/recommendationController')
-const { flushCache } = require('../utils/cache')
+const { getCache, setCache, flushCache } = require('../utils/cache')
 
 // Compare degrees (open to authenticated students)
 router.post('/compare', protect, compareDegrees)
