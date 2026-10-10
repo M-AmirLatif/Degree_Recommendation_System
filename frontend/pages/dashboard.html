@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard - Degree Recommender</title>
-    <link rel="stylesheet" href="../css/style.css?v=5.0" />
+    <link rel="stylesheet" href="../css/style.css?v=6.0" />
     <script src="../js/runtime-config.js"></script>
     <script src="../js/config.js"></script>
     <script src="../js/notifications.js"></script>
@@ -106,7 +106,12 @@
   </head>
   <body class="page-dashboard">
     <div class="navbar">
-      <span class="logo">Degree Recommender</span>
+      <a href="dashboard.html" class="logo">
+        <span class="logo-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+        </span>
+        <span>Degree Recommender</span>
+      </a>
       <button class="nav-toggle" onclick="toggleNav()" aria-label="Menu">
         <span></span><span></span><span></span>
       </button>
@@ -120,35 +125,57 @@
 
     <div class="dashboard content-stack">
       <div class="page-header">
+        <div class="header-badge">
+          <span class="badge-dot"></span>
+          AI-Powered Academic Intelligence
+        </div>
         <h1 id="welcomeMsg">Welcome back</h1>
-        <p class="subtitle">Here is your academic overview</p>
+        <p class="subtitle">Here is your comprehensive academic overview and degree matching intelligence</p>
       </div>
 
       <div class="cards-grid">
         <div class="card">
-          <div class="card-icon">Degrees</div>
+          <div class="card-icon">
+            <svg class="metric-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+            <span>Programs</span>
+          </div>
           <h3 id="totalCourses">0</h3>
           <p>Programs Available</p>
         </div>
         <div class="card">
-          <div class="card-icon">Enrollments</div>
+          <div class="card-icon">
+            <svg class="metric-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+            <span>Enrollments</span>
+          </div>
           <h3 id="enrolledCourses">0</h3>
           <p>Enrolled Degrees</p>
         </div>
         <div class="card">
-          <div class="card-icon">GPA</div>
+          <div class="card-icon">
+            <svg class="metric-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4"/><path d="M12 16V8"/></svg>
+            <span>Profile GPA</span>
+          </div>
           <h3 id="cgpa">0.0</h3>
           <p>Profile GPA</p>
         </div>
         <div class="card">
-          <div class="card-icon">AI</div>
+          <div class="card-icon">
+            <svg class="metric-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"/></svg>
+            <span>AI Matches</span>
+          </div>
           <h3 id="recommendations">5</h3>
           <p>Recommended Degrees</p>
         </div>
       </div>
 
       <section class="glass-panel profile-panel">
-        <h2>My Profile</h2>
+        <div class="panel-header">
+          <h2>
+            <svg class="panel-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            My Academic Profile
+          </h2>
+          <span class="badge-pill">Verified Student</span>
+        </div>
         <div class="profile-grid">
           <div class="profile-item">
             <label>Full Name</label>
@@ -191,7 +218,10 @@
 
       <section class="glass-panel enrolled-panel">
         <div class="panel-header">
-          <h2>My Enrolled Degrees</h2>
+          <h2>
+            <svg class="panel-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10"/></svg>
+            My Enrolled Degrees
+          </h2>
           <span class="badge" id="enrollmentLimitBadge">0/2 Enrolled</span>
         </div>
         <div id="enrolledList" class="enrolled-list">
@@ -201,9 +231,10 @@
 
       <div class="action-banner">
         <div class="action-content">
+          <div class="banner-badge">✨ Next Step</div>
           <h3>Ready to discover your ideal degrees?</h3>
           <p>
-            Explore personalized degree recommendations and top university pathways.
+            Explore personalized degree recommendations and top university pathways powered by semantic AI embeddings.
           </p>
         </div>
         <a href="recommendations.html" class="btn btn-primary"

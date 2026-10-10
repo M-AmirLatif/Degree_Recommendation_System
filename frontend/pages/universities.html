@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>University Explorer & Directory - Degree Recommender</title>
-    <link rel="stylesheet" href="../css/style.css?v=5.0" />
+    <link rel="stylesheet" href="../css/style.css?v=6.0" />
     <script src="../js/runtime-config.js"></script>
     <script src="../js/config.js"></script>
     <script src="../js/notifications.js"></script>
@@ -44,14 +44,18 @@
       }
 
       .filter-card {
-        background: linear-gradient(155deg, rgba(14, 23, 44, 0.88), rgba(18, 30, 56, 0.78));
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 16px;
-        padding: 20px;
-        margin-bottom: 24px;
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        background: linear-gradient(
+          145deg,
+          rgba(16, 23, 46, 0.75) 0%,
+          rgba(10, 15, 30, 0.85) 100%
+        ) !important;
+        border: 1px solid rgba(255, 255, 255, 0.09) !important;
+        border-radius: 20px !important;
+        padding: 24px !important;
+        margin-bottom: 28px !important;
+        backdrop-filter: blur(24px) saturate(180%) !important;
+        -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+        box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
       }
       .filter-grid {
         display: grid;
@@ -67,25 +71,31 @@
       .uni-cards-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 20px;
+        gap: 22px;
       }
       .uni-card {
-        background: linear-gradient(155deg, rgba(13, 22, 45, 0.85), rgba(20, 34, 62, 0.72));
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 16px;
-        padding: 20px;
+        background: linear-gradient(
+          145deg,
+          rgba(16, 23, 46, 0.75) 0%,
+          rgba(10, 15, 30, 0.85) 100%
+        ) !important;
+        border: 1px solid rgba(255, 255, 255, 0.09) !important;
+        border-radius: 20px !important;
+        padding: 24px !important;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        backdrop-filter: blur(24px) saturate(180%) !important;
+        -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+        box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        position: relative;
+        overflow: hidden;
       }
       .uni-card:hover {
-        transform: translateY(-4px);
-        border-color: rgba(99, 102, 241, 0.45);
-        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.55), 0 0 25px rgba(99, 102, 241, 0.18);
+        transform: translateY(-8px) scale(1.02) !important;
+        border-color: rgba(99, 102, 241, 0.45) !important;
+        box-shadow: 0 25px 55px -10px rgba(0, 0, 0, 0.75), 0 0 30px rgba(99, 102, 241, 0.25) !important;
       }
       .uni-header {
         display: flex;
@@ -147,7 +157,12 @@
   </head>
   <body class="page-dashboard">
     <div class="navbar">
-      <span class="logo">Degree Recommender</span>
+      <a href="dashboard.html" class="logo">
+        <span class="logo-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+        </span>
+        <span>Degree Recommender</span>
+      </a>
       <button class="nav-toggle" onclick="toggleNav()" aria-label="Menu">
         <span></span><span></span><span></span>
       </button>

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Dashboard - Degree Recommender</title>
-    <link rel="stylesheet" href="../css/style.css?v=5.0" />
+    <link rel="stylesheet" href="../css/style.css?v=6.0" />
     <script src="../js/runtime-config.js"></script>
     <script src="../js/config.js"></script>
     <script src="../js/notifications.js"></script>
@@ -84,7 +84,12 @@
   </head>
   <body class="page-admin page-admin-dashboard">
     <div class="navbar">
-      <span class="logo">Admin Panel</span>
+      <a href="admin-dashboard.html" class="logo">
+        <span class="logo-icon logo-icon-admin">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18M15 9h6M15 15h6"/></svg>
+        </span>
+        <span>Degree Admin</span>
+      </a>
       <button class="nav-toggle" onclick="toggleNav()" aria-label="Menu">
         <span></span><span></span><span></span>
       </button>
@@ -101,33 +106,52 @@
 
     <div class="dashboard content-stack">
       <div class="page-header">
-        <h1>Admin Dashboard</h1>
-        <p class="subtitle">System overview and management</p>
+        <div class="header-badge header-badge-admin">
+          <span class="badge-dot"></span>
+          System Administration Portal
+        </div>
+        <h1>Admin Control Center</h1>
+        <p class="subtitle">Live analytics, degree offerings, student enrollments, and academic audit telemetry</p>
       </div>
 
       <div class="cards-grid">
         <div class="card">
-          <div class="card-icon">Degrees</div>
+          <div class="card-icon">
+            <svg class="metric-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+            <span>Total Degrees</span>
+          </div>
           <h3 id="totalDegrees">0</h3>
           <p>Total Degrees</p>
         </div>
         <div class="card">
-          <div class="card-icon">Active</div>
+          <div class="card-icon">
+            <svg class="metric-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <span>Active Degrees</span>
+          </div>
           <h3 id="activeDegrees">0</h3>
           <p>Active Degrees</p>
         </div>
         <div class="card">
-          <div class="card-icon">Students</div>
+          <div class="card-icon">
+            <svg class="metric-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span>Students</span>
+          </div>
           <h3 id="totalStudents">0</h3>
           <p>Total Students</p>
         </div>
         <div class="card">
-          <div class="card-icon">Enrollments</div>
+          <div class="card-icon">
+            <svg class="metric-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span>Enrollments</span>
+          </div>
           <h3 id="totalEnrollments">0</h3>
           <p>Active Enrollments</p>
         </div>
         <div class="card">
-          <div class="card-icon">Scholarship</div>
+          <div class="card-icon">
+            <svg class="metric-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M17 10h-6a2 2 0 0 0 0 4h4a2 2 0 0 1 0 4H7"/></svg>
+            <span>Scholarships</span>
+          </div>
           <h3 id="scholarshipStudents">0</h3>
           <p>Scholarship Requests</p>
         </div>
