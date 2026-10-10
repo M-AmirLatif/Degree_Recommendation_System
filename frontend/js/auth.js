@@ -29,8 +29,15 @@
       return inFlightRequests.get(cacheKey)
     }
 
+    const storedToken =
+      localStorage.getItem('drs_token') || localStorage.getItem('token')
+
     const requestHeaders = {
       ...headers,
+    }
+
+    if (storedToken && !requestHeaders['Authorization']) {
+      requestHeaders['Authorization'] = `Bearer ${storedToken}`
     }
 
     const requestOptions = {
@@ -76,8 +83,44 @@
     return fetchPromise
   }
 
-  const redirectToLogin = () => {
+  const setSession = (data) => {
+    if (!data) return
+    if (data.token) {
+      localStorage.setItem('drs_token', data.token)
+      localStorage.setItem('token', data.token)
+    }
+    if (data.name) localStorage.setItem('studentName', data.name)
+    if (data._id) localStorage.setItem('studentId', data._id)
+    if (data.role) localStorage.setItem('userRole', data.role)
+
+    try {
+      sessionStorage.setItem(
+        'drs_cached_profile',
+        JSON.stringify({
+          data: {
+            _id: data._id,
+            name: data.name,
+            email: data.email,
+            role: data.role,
+          },
+          timestamp: Date.now(),
+        }),
+      )
+    } catch (e) {}
+  }
+
+  const clearSession = () => {
+    localStorage.removeItem('drs_token')
+    localStorage.removeItem('token')
+    localStorage.removeItem('studentName')
+    localStorage.removeItem('studentId')
+    localStorage.removeItem('userRole')
     sessionStorage.removeItem('drs_cached_profile')
+    sessionStorage.removeItem('drs_cached_degrees')
+  }
+
+  const redirectToLogin = () => {
+    clearSession()
     window.location.href = 'login.html'
   }
 
@@ -161,8 +204,7 @@
       // Fall through to local redirect even if the server session has expired.
     }
 
-    sessionStorage.removeItem('drs_cached_profile')
-    sessionStorage.removeItem('drs_cached_degrees')
+    clearSession()
     showAppAlert('Logged out successfully.', 'success')
     setTimeout(() => {
       redirectToLogin()
@@ -171,11 +213,13 @@
 
   window.AUTH_CLIENT = {
     apiFetch,
+    clearSession,
     getApiUrl,
     logout,
     redirectIfAuthenticated,
     requireAdmin,
     requireAuth,
+    setSession,
   }
 
   window.logout = logout

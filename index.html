@@ -8,6 +8,8 @@
     <link rel="icon" href="favicon.png" type="image/png" />
     <script src="frontend/js/runtime-config.js"></script>
     <script src="frontend/js/config.js"></script>
+    <script src="frontend/js/notifications.js"></script>
+    <script src="frontend/js/auth.js"></script>
   </head>
   <body class="page-auth page-login">
     <div class="auth-container">
@@ -48,9 +50,10 @@
     </div>
 
     <script>
-      const API = window.APP_CONFIG.API_BASE_URL
+      const { apiFetch, setSession } = window.AUTH_CLIENT
 
-      if (localStorage.getItem('token')) {
+      const storedToken = localStorage.getItem('drs_token') || localStorage.getItem('token')
+      if (storedToken) {
         const role = localStorage.getItem('userRole')
         if (role === 'admin') {
           window.location.href = 'frontend/pages/admin-dashboard.html'
@@ -63,6 +66,7 @@
         const email = document.getElementById('email').value.trim()
         const password = document.getElementById('password').value
         const errorAlert = document.getElementById('errorAlert')
+        const loginBtn = document.querySelector('.btn-primary')
 
         errorAlert.style.display = 'none'
 
@@ -72,34 +76,43 @@
           return
         }
 
+        const originalBtnText = loginBtn.textContent
+        loginBtn.disabled = true
+        loginBtn.style.opacity = '0.75'
+        loginBtn.textContent = 'Signing in...'
+
         try {
-          const response = await fetch(`${API}/auth/login`, {
+          const data = await apiFetch('/auth/login', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password }),
+            body: { email: email.toLowerCase().trim(), password },
           })
 
-          const data = await response.json()
+          setSession(data)
 
-          if (!response.ok) {
-            errorAlert.style.display = 'block'
-            errorAlert.textContent = data.message || 'Login failed.'
-            return
-          }
-
-          localStorage.setItem('token', data.token)
-          localStorage.setItem('studentName', data.name)
-          localStorage.setItem('studentId', data._id)
-          localStorage.setItem('userRole', data.role)
+          loginBtn.textContent = 'Success! Redirecting...'
+          loginBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)'
 
           if (data.role === 'admin') {
-            window.location.href = 'frontend/pages/admin-dashboard.html'
+            showAppAlert('Admin login successful.', 'success')
+            setTimeout(() => {
+              window.location.href = 'frontend/pages/admin-dashboard.html'
+            }, 300)
           } else {
-            window.location.href = 'frontend/pages/dashboard.html'
+            showAppAlert('Login successful.', 'success')
+            setTimeout(() => {
+              window.location.href = 'frontend/pages/dashboard.html'
+            }, 300)
           }
         } catch (error) {
+          loginBtn.disabled = false
+          loginBtn.style.opacity = '1'
+          loginBtn.textContent = originalBtnText
+          loginBtn.style.background = ''
+
           errorAlert.style.display = 'block'
-          errorAlert.textContent = 'Server error. Please try again.'
+          errorAlert.textContent =
+            error.data?.message || 'Server error. Make sure backend is running.'
+          showAppAlert(errorAlert.textContent, 'error')
         }
       }
 

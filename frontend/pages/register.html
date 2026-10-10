@@ -885,11 +885,28 @@
           interests: interestAreasSelected,
         }
 
+        const submitBtn = document.querySelector('.step-nav .btn-primary')
+        const originalText = submitBtn ? submitBtn.textContent : ''
+        if (submitBtn) {
+          submitBtn.disabled = true
+          submitBtn.style.opacity = '0.75'
+          submitBtn.textContent = '🚀 Generating Roadmap...'
+        }
+
         try {
-          await apiFetch('/auth/register', {
+          const data = await apiFetch('/auth/register', {
             method: 'POST',
             body: payload,
           })
+
+          if (window.AUTH_CLIENT && window.AUTH_CLIENT.setSession && data) {
+            window.AUTH_CLIENT.setSession(data)
+          }
+
+          if (submitBtn) {
+            submitBtn.textContent = '✅ Roadmap Ready! Redirecting...'
+            submitBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)'
+          }
 
           successAlert.style.display = 'block'
           successAlert.textContent =
@@ -901,8 +918,14 @@
 
           setTimeout(() => {
             window.location.href = 'recommendations.html'
-          }, 1000)
+          }, 600)
         } catch (error) {
+          if (submitBtn) {
+            submitBtn.disabled = false
+            submitBtn.style.opacity = '1'
+            submitBtn.textContent = originalText
+            submitBtn.style.background = ''
+          }
           errorAlert.style.display = 'block'
           errorAlert.textContent =
             error.data?.message || 'Server error. Please try again.'

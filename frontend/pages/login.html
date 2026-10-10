@@ -57,6 +57,7 @@
         const email = document.getElementById('email').value.trim()
         const password = document.getElementById('password').value
         const errorAlert = document.getElementById('errorAlert')
+        const loginBtn = document.querySelector('.btn-primary')
 
         errorAlert.style.display = 'none'
 
@@ -66,20 +67,39 @@
           return
         }
 
+        const originalBtnText = loginBtn.textContent
+        loginBtn.disabled = true
+        loginBtn.style.opacity = '0.75'
+        loginBtn.textContent = 'Signing in...'
+
         try {
           const data = await apiFetch('/auth/login', {
             method: 'POST',
             body: { email: email.toLowerCase().trim(), password },
           })
 
+          window.AUTH_CLIENT.setSession(data)
+
+          loginBtn.textContent = 'Success! Redirecting...'
+          loginBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)'
+
           if (data.role === 'admin') {
             showAppAlert('Admin login successful.', 'success')
-            window.location.href = 'admin-dashboard.html'
+            setTimeout(() => {
+              window.location.href = 'admin-dashboard.html'
+            }, 300)
           } else {
             showAppAlert('Login successful.', 'success')
-            window.location.href = 'dashboard.html'
+            setTimeout(() => {
+              window.location.href = 'dashboard.html'
+            }, 300)
           }
         } catch (error) {
+          loginBtn.disabled = false
+          loginBtn.style.opacity = '1'
+          loginBtn.textContent = originalBtnText
+          loginBtn.style.background = ''
+
           errorAlert.style.display = 'block'
           errorAlert.textContent =
             error.data?.message || 'Server error. Make sure backend is running.'
