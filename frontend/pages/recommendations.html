@@ -17,19 +17,22 @@
       .rec-card {
         background: linear-gradient(
           155deg,
-          rgba(11, 23, 49, 0.85),
-          rgba(24, 41, 71, 0.65)
+          rgba(13, 22, 45, 0.88),
+          rgba(20, 34, 62, 0.72)
         );
-        border: 1px solid rgba(133, 158, 196, 0.25);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: 18px;
         padding: 24px;
         margin-bottom: 16px;
         position: relative;
         overflow: hidden;
-        transition: all 0.25s ease;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         display: flex;
         flex-direction: column;
         gap: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
       }
       .page-recommendations .rec-card {
         display: flex;
@@ -79,9 +82,9 @@
         background: linear-gradient(180deg, #60a5fa, #22d3ee);
       }
       .rec-card:hover {
-        transform: translateX(4px);
-        border-color: rgba(96, 165, 250, 0.45);
-        box-shadow: 0 14px 32px rgba(2, 8, 28, 0.4);
+        transform: translateY(-3px);
+        border-color: rgba(99, 102, 241, 0.45);
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55), 0 0 25px rgba(99, 102, 241, 0.18);
       }
       .rec-header {
         display: flex;
