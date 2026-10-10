@@ -184,26 +184,26 @@ body::before {
   height: 200%;
   background:
     radial-gradient(
-      ellipse at 18% 18%,
-      rgba(99, 102, 241, 0.12) 0%,
-      transparent 45%
-    ),
-    radial-gradient(
-      ellipse at 82% 22%,
-      rgba(6, 182, 212, 0.09) 0%,
-      transparent 45%
-    ),
-    radial-gradient(
-      ellipse at 50% 80%,
-      rgba(139, 92, 246, 0.08) 0%,
+      ellipse at 15% 15%,
+      rgba(99, 102, 241, 0.22) 0%,
       transparent 50%
     ),
     radial-gradient(
-      ellipse at 25% 75%,
-      rgba(16, 185, 129, 0.05) 0%,
-      transparent 40%
+      ellipse at 85% 20%,
+      rgba(6, 182, 212, 0.18) 0%,
+      transparent 48%
+    ),
+    radial-gradient(
+      ellipse at 50% 85%,
+      rgba(168, 85, 247, 0.18) 0%,
+      transparent 52%
+    ),
+    radial-gradient(
+      ellipse at 20% 80%,
+      rgba(16, 185, 129, 0.12) 0%,
+      transparent 45%
     );
-  animation: ambientDrift 28s ease-in-out infinite alternate;
+  animation: ambientDrift 24s ease-in-out infinite alternate;
   pointer-events: none;
   z-index: 0;
 }
@@ -213,8 +213,8 @@ body::after {
   content: '';
   position: fixed;
   inset: 0;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px);
-  background-size: 32px 32px;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1.2px, transparent 1.2px);
+  background-size: 28px 28px;
   pointer-events: none;
   z-index: 0;
 }
@@ -1646,15 +1646,26 @@ select:focus-visible {
 
 /* Dashboard Typography Refinement */
 .page-dashboard .navbar {
-  background: rgba(8, 14, 32, 0.96);
-  border-bottom: 1px solid rgba(148, 163, 184, 0.24);
-  box-shadow: 0 12px 28px rgba(2, 6, 23, 0.35);
+  background: rgba(7, 12, 26, 0.94);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
 }
 
 .page-dashboard .navbar .logo {
   font-size: 24px;
   font-weight: 800;
   letter-spacing: -0.7px;
+  background: linear-gradient(135deg, #ffffff 0%, #c7d2fe 35%, #818cf8 65%, #38bdf8 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: textShimmer 6s ease-in-out infinite;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .page-dashboard .navbar .nav-name {
@@ -1668,10 +1679,18 @@ select:focus-visible {
   font-size: 15px;
   font-weight: 600;
   letter-spacing: 0.15px;
+  transition: all 0.25s ease;
+}
+
+.page-dashboard .navbar a:hover {
+  color: #f8fafc;
+  background: rgba(99, 102, 241, 0.12);
+  box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
 }
 
 .page-dashboard .dashboard {
   padding-top: 48px;
+  animation: pageEntrance 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
 
 .page-dashboard .page-header h1 {
@@ -1679,8 +1698,13 @@ select:focus-visible {
   font-weight: var(--type-heading-weight);
   letter-spacing: var(--type-heading-letter-spacing);
   line-height: 1.08;
-  color: var(--type-heading-color);
-  text-shadow: var(--type-heading-shadow);
+  background: linear-gradient(135deg, #ffffff 10%, #c7d2fe 45%, #38bdf8 80%, #ffffff 100%);
+  background-size: 220% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: textShimmer 8s ease-in-out infinite;
+  text-shadow: 0 4px 24px rgba(99, 102, 241, 0.35);
 }
 
 .page-dashboard .page-header .subtitle {
@@ -1697,12 +1721,87 @@ select:focus-visible {
 
 .page-dashboard .card {
   background: linear-gradient(
-    160deg,
-    rgba(30, 41, 59, 0.75),
-    rgba(30, 41, 59, 0.55)
+    155deg,
+    rgba(13, 22, 45, 0.88),
+    rgba(20, 34, 62, 0.72)
   );
-  border-color: rgba(148, 163, 184, 0.2);
-  box-shadow: 0 10px 28px rgba(2, 6, 23, 0.2);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.page-dashboard .card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  opacity: 0.95;
+  transition: all 0.3s ease;
+}
+
+/* Card 1: Programs Available - Electric Violet / Indigo */
+.page-dashboard .cards-grid .card:nth-child(1)::before {
+  background: linear-gradient(90deg, #6366f1, #a855f7);
+  box-shadow: 0 0 14px rgba(99, 102, 241, 0.6);
+}
+.page-dashboard .cards-grid .card:nth-child(1) h3 {
+  background: linear-gradient(135deg, #e0e7ff, #818cf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Card 2: Enrolled Degrees - Emerald Green */
+.page-dashboard .cards-grid .card:nth-child(2)::before {
+  background: linear-gradient(90deg, #10b981, #34d399);
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.6);
+}
+.page-dashboard .cards-grid .card:nth-child(2) h3 {
+  background: linear-gradient(135deg, #d1fae5, #34d399);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Card 3: Profile GPA - Cyan / Sky Blue */
+.page-dashboard .cards-grid .card:nth-child(3)::before {
+  background: linear-gradient(90deg, #06b6d4, #38bdf8);
+  box-shadow: 0 0 14px rgba(6, 182, 212, 0.6);
+}
+.page-dashboard .cards-grid .card:nth-child(3) h3 {
+  background: linear-gradient(135deg, #e0f2fe, #38bdf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Card 4: Recommended Degrees - Purple / Magenta AI Sparkle */
+.page-dashboard .cards-grid .card:nth-child(4)::before {
+  background: linear-gradient(90deg, #ec4899, #8b5cf6);
+  box-shadow: 0 0 14px rgba(236, 72, 153, 0.6);
+}
+.page-dashboard .cards-grid .card:nth-child(4) h3 {
+  background: linear-gradient(135deg, #fce7f3, #c084fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.page-dashboard .card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(99, 102, 241, 0.45);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6), 0 0 25px rgba(99, 102, 241, 0.22);
+}
+
+.page-dashboard .card:hover::before {
+  height: 4px;
 }
 
 .page-dashboard .card .card-icon {
@@ -1726,7 +1825,14 @@ select:focus-visible {
 }
 
 .page-dashboard .glass-panel {
-  border-color: rgba(148, 163, 184, 0.2);
+  border-color: rgba(255, 255, 255, 0.08);
+  background: linear-gradient(
+    155deg,
+    rgba(14, 23, 44, 0.88),
+    rgba(18, 30, 56, 0.78)
+  );
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
 }
 
 .page-dashboard .glass-panel h2 {
@@ -2409,6 +2515,15 @@ select:focus-visible {
   font-size: 24px;
   font-weight: 800;
   letter-spacing: -0.7px;
+  background: linear-gradient(135deg, #ffffff 0%, #c7d2fe 35%, #818cf8 65%, #38bdf8 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: textShimmer 6s ease-in-out infinite;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .page-recommendations .navbar .nav-name {
@@ -2422,19 +2537,32 @@ select:focus-visible {
   font-size: 15px;
   font-weight: 600;
   letter-spacing: 0.15px;
+  transition: all 0.25s ease;
+}
+
+.page-recommendations .navbar a:hover {
+  color: #f8fafc;
+  background: rgba(99, 102, 241, 0.12);
+  box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
 }
 
 .page-recommendations .dashboard {
   padding-top: 48px;
+  animation: pageEntrance 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
 
 .page-recommendations .page-header h1 {
   font-size: var(--type-page-heading-size);
   font-weight: var(--type-heading-weight);
-  line-height: 1.08;
   letter-spacing: var(--type-heading-letter-spacing);
-  color: var(--type-heading-color);
-  text-shadow: var(--type-heading-shadow);
+  line-height: 1.08;
+  background: linear-gradient(135deg, #ffffff 10%, #c7d2fe 45%, #38bdf8 80%, #ffffff 100%);
+  background-size: 220% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: textShimmer 8s ease-in-out infinite;
+  text-shadow: 0 4px 24px rgba(99, 102, 241, 0.35);
 }
 
 .page-recommendations .page-header .subtitle {
